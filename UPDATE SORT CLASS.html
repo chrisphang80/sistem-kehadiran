@@ -2,7 +2,7 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>SISTEM ANALISIS DATA KEHADIRAN MURID</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -34,7 +34,7 @@ header .sekolah-info { font-size: 0.82rem; opacity: 0.9; }
 .tahun-picker-wrap { display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.2); padding: 0.4rem 0.75rem; border-radius: 10px; flex-shrink: 0; }
 .tahun-picker-wrap label { font-size: 0.82rem; font-weight: 600; }
 .tahun-picker-wrap select { padding: 0.35rem 0.5rem; border-radius: 6px; border: none; font-size: 0.85rem; font-weight: 700; color: var(--primary); background: white; cursor: pointer; }
-.btn-header { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); padding: 0.45rem 0.85rem; border-radius: 8px; cursor: pointer; font-size: 0.82rem; font-weight: 600; transition: all 0.2s; }
+.btn-header { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); padding: 0.45rem 0.85rem; border-radius: 8px; cursor: pointer; font-size: 0.82rem; font-weight: 600; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; }
 .btn-header:hover { background: rgba(255,255,255,0.35); }
 nav { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 nav button { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.82rem; transition: all 0.2s; }
@@ -132,7 +132,7 @@ h3 { font-size: 1.05rem; margin: 1.25rem 0 0.5rem; }
 .card h4 { font-size: 0.8rem; color: var(--muted); font-weight: 500; text-transform: uppercase; }
 .card .value { font-size: 1.8rem; font-weight: bold; color: var(--primary); margin-top: 0.5rem; }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-.table-wrap { overflow-x: auto; background: var(--card); border-radius: 12px; box-shadow: var(--shadow-sm); margin-bottom: 1rem; }
+.table-wrap { overflow-x: auto; background: var(--card); border-radius: 12px; box-shadow: var(--shadow-sm); margin-bottom: 1rem; -webkit-overflow-scrolling: touch; }
 table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
 th { background: var(--primary); color: white; padding: 0.6rem 0.4rem; text-align: center; font-weight: 600; white-space: nowrap; }
 td { padding: 0.45rem; border-bottom: 1px solid var(--border); text-align: center; }
@@ -230,32 +230,168 @@ td input.pct { background: #dbeafe; }
 .suggest-toggle input { width: 16px; height: 16px; }
 
 .year-list { display: flex; flex-direction: column; gap: 0.5rem; }
-.year-item { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.6rem 0.9rem; background: #f8fafc; border-radius: 8px; border: 1px solid var(--border); }
+.year-item { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.6rem 0.9rem; background: #f8fafc; border-radius: 8px; border: 1px solid var(--border); flex-wrap: wrap; }
 .year-item .year-name { font-weight: 700; font-size: 1rem; color: var(--primary); }
 .year-item .year-badge { font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 8px; background: #dbeafe; color: #1e40af; font-weight: 600; margin-left: 0.5rem; }
 .year-item .year-actions { display: flex; gap: 0.35rem; }
 
-@media (max-width: 640px) {
-  main { padding: 1rem; }
-  header { padding: 0.75rem 1rem; }
-  header h1 { font-size: 0.95rem; }
-  nav button { padding: 0.35rem 0.6rem; font-size: 0.72rem; }
-  .stat-card .stat-value { font-size: 1.7rem; }
-  .stat-card .stat-icon { width: 40px; height: 40px; font-size: 1.2rem; }
-  .dash-hero { padding: 1.25rem; }
-  .dash-greeting { font-size: 1.15rem; }
-  th, td { padding: 0.35rem 0.2rem; font-size: 0.72rem; }
-  td input { width: 46px; font-size: 0.72rem; }
-  h2 { font-size: 1.15rem; }
-  .filter-bar { padding: 0.75rem; }
-  .logo-box { width: 44px; height: 44px; }
+/* ============ 响应式：电脑端 vs 手机端 ============ */
+.mobile-only { display: none; }
+.desktop-only { display: block; }
+.mobile-page-title { display: none; }
+
+@media (min-width: 768px) {
+  .mobile-only { display: none !important; }
+  .desktop-only { display: block; }
+}
+
+@media (max-width: 767px) {
+  .desktop-only { display: none !important; }
+  .mobile-only { display: flex; }
+
+  header { padding: 0.6rem 0.75rem; position: sticky; top: 0; }
+  .header-top { gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: nowrap; }
+  .logo-box { width: 40px; height: 40px; }
+  .logo-box .logo-placeholder { font-size: 1.1rem; }
+  header h1 { font-size: 0.85rem; line-height: 1.2; }
+  header .sekolah-info { font-size: 0.7rem; display: none; }
+  .tahun-picker-wrap { padding: 0.3rem 0.5rem; }
+  .tahun-picker-wrap label { font-size: 0.72rem; }
+  .tahun-picker-wrap select { font-size: 0.75rem; padding: 0.25rem 0.4rem; }
+  .btn-header { padding: 0.35rem 0.6rem; font-size: 0.72rem; }
+
+  .mobile-page-title {
+    display: flex;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: white;
+    background: rgba(255,255,255,0.15);
+    padding: 0.35rem 0.7rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    align-items: center;
+  }
+
+  nav {
+    display: flex;
+    gap: 0.4rem;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.35rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  nav button {
+    flex-shrink: 0;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  main { padding: 0.75rem; }
+
+  .dash-hero { padding: 1rem; border-radius: 14px; margin-bottom: 0.75rem; }
+  .dash-greeting { font-size: 1.1rem; }
+  .dash-subtitle { font-size: 0.8rem; }
+  .dash-date { font-size: 0.75rem; padding: 0.35rem 0.75rem; }
+
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 0.75rem; }
+  .stat-card { padding: 0.8rem 0.6rem; border-radius: 12px; }
+  .stat-card .stat-icon { width: 32px; height: 32px; font-size: 1rem; top: 0.5rem; right: 0.5rem; border-radius: 8px; }
+  .stat-card .stat-label { font-size: 0.62rem; padding-right: 36px; margin-bottom: 0.25rem; letter-spacing: 0; }
+  .stat-card .stat-value { font-size: 1.35rem; padding-right: 36px; }
+  .stat-card .stat-desc { font-size: 0.62rem; padding-right: 36px; margin-top: 0.25rem; }
+
+  .quick-actions { gap: 0.4rem; margin-bottom: 0.75rem; }
+  .quick-btn { min-width: calc(50% - 0.2rem); flex: 1 1 calc(50% - 0.2rem); padding: 0.6rem 0.5rem; font-size: 0.75rem; border-radius: 10px; gap: 0.4rem; }
+  .quick-btn .qi { width: 32px; height: 32px; font-size: 1rem; }
+  .quick-btn span { font-size: 0.72rem; }
+
+  .section-title { margin: 1rem 0 0.6rem; }
+  .section-title h3 { font-size: 0.95rem; }
+  .section-title .badge { font-size: 0.65rem; padding: 0.15rem 0.45rem; }
+
+  .grid-bulan { grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
+  .bulan-card { padding: 0.6rem 0.4rem; border-radius: 10px; }
+  .bulan-card h4 { font-size: 0.75rem; margin-bottom: 0.25rem; }
+  .bulan-card .pct { font-size: 1rem; }
+  .bulan-card .pct.empty { font-size: 0.62rem; }
+  .bulan-card .enrol { font-size: 0.62rem; margin-top: 0.2rem; }
+
+  .chart-row { grid-template-columns: 1fr; gap: 0.6rem; margin-bottom: 0.75rem; }
+  .chart-panel { padding: 0.75rem; border-radius: 12px; }
+  .chart-panel .panel-title { font-size: 0.82rem; }
+  .chart-panel .panel-sub { font-size: 0.65rem; }
+  .chart-panel .chart-container { height: 200px; }
+
+  .top-kelas-controls { gap: 0.25rem; }
+  .top-kelas-mode-btn { padding: 0.2rem 0.45rem; font-size: 0.65rem; }
+  .top-kelas-month-picker { font-size: 0.65rem; }
+  .top-kelas-month-picker select { font-size: 0.65rem; padding: 0.15rem 0.3rem; }
+  .top-kelas-item { padding: 0.45rem; gap: 0.5rem; }
+  .top-kelas-rank { width: 26px; height: 26px; font-size: 0.7rem; }
+  .top-kelas-name { font-size: 0.78rem; }
+  .top-kelas-pct { font-size: 0.82rem; min-width: 48px; }
+
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 10px;
+  }
+  .table-wrap table { min-width: 720px; }
+  th { padding: 0.45rem 0.3rem; font-size: 0.7rem; }
+  td { padding: 0.35rem 0.25rem; font-size: 0.7rem; }
+  td input { width: 42px; font-size: 0.7rem; padding: 3px 4px; }
+
+  h2 { font-size: 1.1rem; margin-bottom: 0.6rem; }
+  h3 { font-size: 0.92rem; margin: 0.8rem 0 0.4rem; }
+
+  .cards { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 0.75rem; }
+  .card { padding: 0.75rem; border-radius: 10px; }
+  .card h4 { font-size: 0.68rem; }
+  .card .value { font-size: 1.25rem; margin-top: 0.25rem; }
+
+  .form-grid { grid-template-columns: 1fr; gap: 0.6rem; margin-bottom: 0.75rem; }
+  .form-group label { font-size: 0.75rem; }
+  .form-group input, .form-group select, .form-group textarea { padding: 0.5rem; font-size: 0.85rem; }
+
+  .filter-bar { padding: 0.6rem; gap: 0.5rem; margin-bottom: 0.6rem; }
+  .filter-bar .form-group { min-width: 100%; max-width: 100%; }
+  .filter-info { font-size: 0.72rem; padding: 0.25rem 0; }
+
+  .actions { gap: 0.4rem; margin: 0.6rem 0; }
+  .btn { padding: 0.5rem 0.8rem; font-size: 0.78rem; border-radius: 8px; }
+  .btn.small { padding: 0.3rem 0.55rem; font-size: 0.7rem; }
+
+  .tabs { gap: 0.4rem; margin-bottom: 0.6rem; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { padding: 0.4rem 0.7rem; font-size: 0.75rem; white-space: nowrap; flex-shrink: 0; }
+
+  .logo-upload-section { padding: 0.75rem; gap: 0.75rem; margin-bottom: 0.75rem; }
+  .logo-preview-box { width: 80px; height: 80px; }
+  .logo-info p { font-size: 0.75rem; }
+
   .pie-card .pie-canvas-wrap { height: 180px; }
-  .chart-panel .chart-container { height: 240px; }
+  .chart-grid { grid-template-columns: 1fr; gap: 0.6rem; }
+  .big-pie-wrap { max-width: 100%; }
+
+  .intervensi-form { padding: 0.75rem; }
+  .suggest-panel { padding: 0.75rem; }
+  .suggest-grid { grid-template-columns: 1fr; gap: 0.5rem; }
+  .suggest-card { padding: 0.7rem; }
+
+  .year-item { padding: 0.45rem 0.6rem; flex-wrap: wrap; gap: 0.4rem; }
+  .year-item .year-name { font-size: 0.9rem; }
+  .year-item .year-actions .btn { padding: 0.25rem 0.5rem; font-size: 0.68rem; }
+
+  .toast { bottom: 1rem; padding: 0.6rem 1rem; font-size: 0.8rem; left: 1rem; right: 1rem; transform: translateY(100px); text-align: center; }
+  .toast.show { transform: translateY(0); }
 }
 
 @page { size: A4 landscape; margin: 6mm; }
 @media print {
-  header, nav, .actions, button, .btn, .tabs, .form-grid, .filter-bar, .logo-upload-section, .toast, .quick-actions, .intervensi-form, .suggest-panel, .tahun-picker-wrap, .top-kelas-controls, .btn-header { display: none !important; }
+  header, nav, .actions, button, .btn, .tabs, .form-grid, .filter-bar, .logo-upload-section, .toast, .quick-actions, .intervensi-form, .suggest-panel, .tahun-picker-wrap, .top-kelas-controls, .btn-header, .mobile-page-title { display: none !important; }
   html, body { background: white !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
   .page { display: block !important; }
   .page:not(.active) { display: none !important; }
@@ -274,7 +410,7 @@ td input.pct { background: #dbeafe; }
   .dash-hero { padding: 8pt !important; margin-bottom: 6pt !important; }
   .dash-greeting { font-size: 13pt !important; }
   .table-wrap { box-shadow: none !important; margin: 0 !important; overflow: visible !important; border: 0.5pt solid #cbd5e1 !important; border-radius: 0 !important; width: 100% !important; }
-  table { width: 100% !important; font-size: 10pt !important; border-collapse: collapse !important; }
+  table { width: 100% !important; font-size: 10pt !important; border-collapse: collapse !important; min-width: 0 !important; }
   th { background: #1e40af !important; color: white !important; padding: 4pt 3pt !important; font-size: 9.5pt !important; border: 0.5pt solid #1e40af !important; }
   td { padding: 3.5pt 3pt !important; font-size: 10pt !important; border: 0.5pt solid #e2e8f0 !important; }
   tr { page-break-inside: avoid; }
@@ -292,8 +428,10 @@ td input.pct { background: #dbeafe; }
   .tab-content { display: block !important; }
   * { box-shadow: none !important; text-shadow: none !important; }
   body::before { content: attr(data-print-title); display: block; font-size: 14pt; font-weight: bold; color: #1e40af; border-bottom: 2pt solid #1e40af; padding-bottom: 3pt; margin-bottom: 4pt; }
+  .mobile-only { display: none !important; }
 }
 body[data-print-title]::before { display: none; }
+@media print { body[data-print-title]::before { display: block; } }
 </style>
 </head>
 <body data-print-title="SISTEM ANALISIS DATA KEHADIRAN MURID">
@@ -306,12 +444,13 @@ body[data-print-title]::before { display: none; }
       <div class="sekolah-info" id="hdr-info"></div>
     </div>
     <div class="tahun-picker-wrap" title="Pilih tahun untuk melihat/mengisi data">
-      <label for="global-tahun">📅 Tahun:</label>
+      <label for="global-tahun">📅</label>
       <select id="global-tahun" onchange="tukarTahunAktif(this.value)"></select>
     </div>
-    <button class="btn-header" onclick="manualSyncFromDaily()" title="Tarik data terkini dari sistem点名">🔄 Segerak</button>
-    <a href="index.html" class="btn-header" style="text-decoration:none;">📋 Rekod Harian</a>
+    <button class="btn-header" onclick="manualSyncFromDaily()" title="Tarik data terkini dari sistem点名">🔄</button>
+    <a href="index.html" class="btn-header" style="text-decoration:none;">📋</a>
   </div>
+  <div class="mobile-page-title mobile-only" id="mobile-page-title">🏠 Dashboard</div>
   <nav>
     <button class="nav-btn active" data-page="dashboard">🏠 Dashboard</button>
     <button class="nav-btn" data-page="data-asas">📋 Data Asas</button>
@@ -379,9 +518,9 @@ body[data-print-title]::before { display: none; }
           <div class="top-kelas-month-picker">
             <label for="top-kelas-bulan">Bulan:</label>
             <select id="top-kelas-bulan" onchange="renderTopKelas()">
-              <option value="1">Januari</option><option value="2">Februari</option><option value="3">Mac</option><option value="4">April</option>
-              <option value="5">Mei</option><option value="6">Jun</option><option value="7">Julai</option><option value="8">Ogos</option>
-              <option value="9">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Disember</option>
+              <option value="1">Jan</option><option value="2">Feb</option><option value="3">Mac</option><option value="4">Apr</option>
+              <option value="5">Mei</option><option value="6">Jun</option><option value="7">Jul</option><option value="8">Ogos</option>
+              <option value="9">Sep</option><option value="10">Okt</option><option value="11">Nov</option><option value="12">Dis</option>
             </select>
           </div>
         </div>
@@ -808,6 +947,8 @@ const KATEGORI_LABEL = { melayu:'Melayu', cina:'Cina', india:'India', lain:'Lain
 const KATEGORI_WARNA = { melayu:'#2563eb', cina:'#dc2626', india:'#16a34a', lain:'#f59e0b' };
 const ALIRAN_LIST = ['D1/T1','D2/T2','D3/T3','D4/T4','D5/T5','D6/T6','PRA','PPKI'];
 
+function isMobileView() { return window.innerWidth < 768; }
+
 function defaultKelas() {
   return [
     { id:1, nama:'1M', aliran:'D1/T1', melayu_l:0, melayu_p:0, cina_l:0, cina_p:0, india_l:0, india_p:0, lain_l:0, lain_p:0 },
@@ -886,7 +1027,6 @@ function getBulanData(tahun, bulan) {
    集成 — 从点名系统同步
    ============================================================ */
 function syncFromDailySystemBridge() {
-  // 若每日点名系统在同一页面，调用它暴露的同步函数
   if (typeof window.syncFromDailySystem === 'function' && window.syncFromDailySystem !== syncFromDailySystemBridge) {
     try { window.syncFromDailySystem(); return true; }
     catch (e) { console.warn('Sync bridge error:', e); }
@@ -896,7 +1036,6 @@ function syncFromDailySystemBridge() {
 
 function manualSyncFromDaily() {
   const ok = syncFromDailySystemBridge();
-  // 重新加载 state（因为 index.html 写入了 localStorage）
   state = loadData();
   tahunAktif = state.tahunAktif;
   if (!state.dataTahunan[tahunAktif]) {
@@ -1157,6 +1296,13 @@ function padamLogo() {
 /* ============================================================
    NAVIGATION
    ============================================================ */
+const PAGE_TITLES = {
+  dashboard:'🏠 Dashboard', 'data-asas':'📋 Data Asas', bulanan:'📅 Bulanan',
+  'enrolmen-tahunan':'👥 Enrolmen', 'analisis-bulanan':'📊 Analisis Bulanan',
+  'analisis-kelas':'🏫 Analisis Kelas', 'analisis-keseluruhan':'📈 Keseluruhan',
+  intervensi:'🆘 Intervensi', tetapan:'⚙️ Tetapan'
+};
+
 document.querySelectorAll('.nav-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const page = btn.dataset.page;
@@ -1164,6 +1310,8 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.classList.add('active');
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-'+page).classList.add('active');
+    const mpt = document.getElementById('mobile-page-title');
+    if (mpt) mpt.textContent = PAGE_TITLES[page] || '📊 Sistem';
     try {
       if (page==='dashboard') renderDashboard();
       if (page==='data-asas') { renderDataAsas(); renderYearList(); }
@@ -1210,8 +1358,10 @@ let chartTrend = null;
 let chartEnrolTrend = null;
 let chartPieKaum = null;
 
+function chartAspect() { return window.innerWidth >= 768; }
+
 function renderDashboard() {
-  syncFromDailySystemBridge();  // 自动从点名系统拉数据
+  syncFromDailySystemBridge();
   try {
     const s = state.sekolah;
     const tahun = tahunAktif;
@@ -1276,7 +1426,6 @@ function renderDashboard() {
       }
     }
 
-    // Trend chart
     try {
       const labels = BULAN.slice(1);
       const dataS = [];
@@ -1295,7 +1444,7 @@ function renderDashboard() {
             { label:'Sebenar (%)', data:dataS, borderColor:'#2563eb', backgroundColor:grad, tension:0.4, fill:true, spanGaps:true, borderWidth:3, pointRadius:5, pointHoverRadius:8, pointBackgroundColor:'#fff', pointBorderColor:'#2563eb', pointBorderWidth:2 },
             { label:'KPI (%)', data:dataK, borderColor:'#dc2626', borderDash:[6,4], pointRadius:0, borderWidth:2 }
           ]},
-          options:{ responsive:true, maintainAspectRatio:false, interaction:{ intersect:false, mode:'index' }, scales:{ y:{ min:70, max:100, ticks:{ callback:v=>v+'%', font:{ size:11 } }, grid:{ color:'rgba(0,0,0,0.05)' } }, x:{ grid:{ display:false }, ticks:{ font:{ size:11 } } } }, plugins:{ legend:{ position:'bottom', labels:{ usePointStyle:true, padding:15, font:{ size:12 } } }, tooltip:{ backgroundColor:'rgba(15,23,42,0.95)', padding:12, cornerRadius:8 } } }
+          options:{ responsive:true, maintainAspectRatio: chartAspect(), interaction:{ intersect:false, mode:'index' }, scales:{ y:{ min:70, max:100, ticks:{ callback:v=>v+'%', font:{ size:11 } }, grid:{ color:'rgba(0,0,0,0.05)' } }, x:{ grid:{ display:false }, ticks:{ font:{ size:11 } } } }, plugins:{ legend:{ position:'bottom', labels:{ usePointStyle:true, padding:15, font:{ size:12 } } }, tooltip:{ backgroundColor:'rgba(15,23,42,0.95)', padding:12, cornerRadius:8 } } }
         });
       }
     } catch (e) { console.error('Chart trend error:', e); }
@@ -1314,7 +1463,7 @@ function renderDashboard() {
         chartEnrolTrend = new Chart(ctx, {
           type:'line',
           data:{ labels, datasets:[{ label:'Jumlah Enrolmen', data:enrolData, borderColor:'#16a34a', backgroundColor:grad, tension:0.4, fill:true, borderWidth:3, pointRadius:5, pointHoverRadius:8, pointBackgroundColor:'#fff', pointBorderColor:'#16a34a', pointBorderWidth:2 }]},
-          options:{ responsive:true, maintainAspectRatio:false, interaction:{ intersect:false, mode:'index' }, scales:{ y:{ beginAtZero:false, ticks:{ font:{ size:11 } }, grid:{ color:'rgba(0,0,0,0.05)' } }, x:{ grid:{ display:false }, ticks:{ font:{ size:11 } } } }, plugins:{ legend:{ position:'bottom', labels:{ usePointStyle:true, padding:15, font:{ size:12 } } }, tooltip:{ backgroundColor:'rgba(15,23,42,0.95)', padding:12, cornerRadius:8 } } }
+          options:{ responsive:true, maintainAspectRatio: chartAspect(), interaction:{ intersect:false, mode:'index' }, scales:{ y:{ beginAtZero:false, ticks:{ font:{ size:11 } }, grid:{ color:'rgba(0,0,0,0.05)' } }, x:{ grid:{ display:false }, ticks:{ font:{ size:11 } } } }, plugins:{ legend:{ position:'bottom', labels:{ usePointStyle:true, padding:15, font:{ size:12 } } }, tooltip:{ backgroundColor:'rgba(15,23,42,0.95)', padding:12, cornerRadius:8 } } }
         });
       }
     } catch (e) { console.error('Chart enrol error:', e); }
@@ -1340,7 +1489,7 @@ function renderDashboard() {
             chartPieKaum = new Chart(canvas.getContext('2d'), {
               type: 'doughnut',
               data: { labels: KATEGORI.map(c => KATEGORI_LABEL[c]), datasets: [{ data: KATEGORI.map(c => totKaum[c]), backgroundColor: KATEGORI.map(c => KATEGORI_WARNA[c]), borderColor: '#fff', borderWidth: 3, hoverOffset: 12 }] },
-              options: { responsive:true, maintainAspectRatio:false, cutout: '55%', plugins: { legend: { position:'bottom', labels:{ usePointStyle:true, padding:14, font:{ size:12 } } }, tooltip: { backgroundColor:'rgba(15,23,42,0.95)', padding:12, cornerRadius:8, callbacks: { label: ctx => { const val = ctx.parsed; const pct = totalPie>0?(val/totalPie*100).toFixed(1):0; return `${ctx.label}: ${val} (${pct}%)`; } } }, datalabels: { color:'#fff', font:{ weight:'bold', size:12 }, formatter: v => v===0||totalPie===0?'':((v/totalPie*100)>=5?(v/totalPie*100).toFixed(1)+'%':'') } } },
+              options: { responsive:true, maintainAspectRatio: chartAspect(), cutout: '55%', plugins: { legend: { position:'bottom', labels:{ usePointStyle:true, padding:14, font:{ size:12 } } }, tooltip: { backgroundColor:'rgba(15,23,42,0.95)', padding:12, cornerRadius:8, callbacks: { label: ctx => { const val = ctx.parsed; const pct = totalPie>0?(val/totalPie*100).toFixed(1):0; return `${ctx.label}: ${val} (${pct}%)`; } } }, datalabels: { color:'#fff', font:{ weight:'bold', size:12 }, formatter: v => v===0||totalPie===0?'':((v/totalPie*100)>=5?(v/totalPie*100).toFixed(1)+'%':'') } } },
               plugins: [ChartDataLabels]
             });
           }
@@ -1522,7 +1671,7 @@ function fillKelasDropdown() {
    BULANAN
    ============================================================ */
 function renderBulanan() {
-  syncFromDailySystemBridge();  // 自动拉取最新点名数据
+  syncFromDailySystemBridge();
   const picker = document.getElementById('bulanan-pilih');
   const bulanStr = picker ? picker.value : '';
   const aliranEl = document.getElementById('bulanan-aliran');
@@ -1727,7 +1876,7 @@ function renderEnrolmenTahunan() {
       chartEnrolKeseluruhan = new Chart(ctxEl, {
         type:'line',
         data:{ labels, datasets:[{ label:'Jumlah Enrolmen', data:dataEnrol, borderColor:'#16a34a', backgroundColor:'rgba(22,163,74,0.1)', tension:0.3, fill:true, pointRadius:5 }]},
-        options:{ responsive:true, maintainAspectRatio:true, scales:{ y:{ beginAtZero:false } }, plugins:{ legend:{ position:'bottom' } } }
+        options:{ responsive:true, maintainAspectRatio: chartAspect(), scales:{ y:{ beginAtZero:false } }, plugins:{ legend:{ position:'bottom' } } }
       });
     }
     const kelasLabels = kelasList.map(k=>k.nama);
@@ -1742,7 +1891,7 @@ function renderEnrolmenTahunan() {
           { label:'Awal Tahun', data:awalData, backgroundColor:'rgba(37,99,235,0.7)', borderRadius:6 },
           { label:'Akhir Tahun', data:akhirData, backgroundColor:'rgba(22,163,74,0.7)', borderRadius:6 }
         ]},
-        options:{ responsive:true, maintainAspectRatio:true, scales:{ y:{ beginAtZero:true } }, plugins:{ legend:{ position:'bottom' } } }
+        options:{ responsive:true, maintainAspectRatio: chartAspect(), scales:{ y:{ beginAtZero:true } }, plugins:{ legend:{ position:'bottom' } } }
       });
     }
   } catch (e) { console.error('Chart enrol tahunan error:', e); }
@@ -1769,7 +1918,7 @@ function renderPieCharts() {
       pieCharts.keseluruhan = new Chart(ctxKes, {
         type: 'doughnut',
         data: { labels: KATEGORI.map(c => KATEGORI_LABEL[c]), datasets: [{ data: KATEGORI.map(c => totKaum[c]), backgroundColor: KATEGORI.map(c => KATEGORI_WARNA[c]), borderColor: '#fff', borderWidth: 3, hoverOffset: 10 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 12 } }, tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed} (${totalSemua>0?(ctx.parsed/totalSemua*100).toFixed(1):0}%)` } }, datalabels: { color: '#fff', font: { weight: 'bold', size: 11 }, formatter: v => v===0||totalSemua===0?'':((v/totalSemua*100)>=3?(v/totalSemua*100).toFixed(1)+'%':'') } } },
+        options: { responsive: true, maintainAspectRatio: chartAspect(), plugins: { legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 12 } }, tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed} (${totalSemua>0?(ctx.parsed/totalSemua*100).toFixed(1):0}%)` } }, datalabels: { color: '#fff', font: { weight: 'bold', size: 11 }, formatter: v => v===0||totalSemua===0?'':((v/totalSemua*100)>=3?(v/totalSemua*100).toFixed(1)+'%':'') } } },
         plugins: [ChartDataLabels]
       });
     }
@@ -1784,7 +1933,7 @@ function renderPieCharts() {
       pieCharts[cat] = new Chart(ctx, {
         type: 'doughnut',
         data: { labels: ['Lelaki', 'Perempuan'], datasets: [{ data: [l, p], backgroundColor: ['#3b82f6', '#ec4899'], borderColor: '#fff', borderWidth: 2, hoverOffset: 8 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 8 } }, tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed} (${totalKP>0?(ctx.parsed/totalKP*100).toFixed(1):0}%)` } }, datalabels: { color: '#fff', font: { weight: 'bold', size: 11 }, formatter: v => v===0||totalKP===0?'':((v/totalKP*100)>=5?(v/totalKP*100).toFixed(1)+'%':'') } } },
+        options: { responsive: true, maintainAspectRatio: chartAspect(), plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 8 } }, tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed} (${totalKP>0?(ctx.parsed/totalKP*100).toFixed(1):0}%)` } }, datalabels: { color: '#fff', font: { weight: 'bold', size: 11 }, formatter: v => v===0||totalKP===0?'':((v/totalKP*100)>=5?(v/totalKP*100).toFixed(1)+'%':'') } } },
         plugins: [ChartDataLabels]
       });
       const el = document.getElementById('pie-' + cat + '-total');
@@ -1805,7 +1954,7 @@ function renderPieCharts() {
       pieCharts['kelas_' + k.id] = new Chart(document.getElementById(kelasId), {
         type: 'pie',
         data: { labels: KATEGORI.map(c => KATEGORI_LABEL[c]), datasets: [{ data: dataK, backgroundColor: KATEGORI.map(c => KATEGORI_WARNA[c]), borderColor: '#fff', borderWidth: 2, hoverOffset: 8 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 6, boxWidth: 12 } }, tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed} (${totalKelas>0?(ctx.parsed/totalKelas*100).toFixed(1):0}%)` } }, datalabels: { color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v===0||totalKelas===0?'':((v/totalKelas*100)>=8?(v/totalKelas*100).toFixed(1)+'%':'') } } },
+        options: { responsive: true, maintainAspectRatio: chartAspect(), plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 6, boxWidth: 12 } }, tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed} (${totalKelas>0?(ctx.parsed/totalKelas*100).toFixed(1):0}%)` } }, datalabels: { color: '#fff', font: { weight: 'bold', size: 10 }, formatter: v => v===0||totalKelas===0?'':((v/totalKelas*100)>=8?(v/totalKelas*100).toFixed(1)+'%':'') } } },
         plugins: [ChartDataLabels]
       });
     });
@@ -1876,7 +2025,7 @@ function renderAnalisisBulanan() {
           { label:'% Kehadiran', data: chartData, backgroundColor: chartData.map(v => v==null?'#cbd5e1':(v>=s.kpi?'rgba(22,163,74,0.7)':'rgba(220,38,38,0.7)')), borderRadius:6 },
           { label:'KPI', data: chartLabels.map(()=>s.kpi), type:'line', borderColor:'#f59e0b', borderDash:[6,4], pointRadius:0 }
         ]},
-        options:{ responsive:true, maintainAspectRatio:true, scales:{ y:{ min:50, max:100, ticks:{ callback:v=>v+'%' } } }, plugins:{ legend:{ position:'bottom' } } }
+        options:{ responsive:true, maintainAspectRatio: chartAspect(), scales:{ y:{ min:50, max:100, ticks:{ callback:v=>v+'%' } } }, plugins:{ legend:{ position:'bottom' } } }
       });
     }
   } catch (e) { console.error('Chart analisis bulanan error:', e); }
@@ -1938,7 +2087,7 @@ function renderAnalisisKelas() {
           { label: k.nama + ' (%)', data: chartData, borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,0.1)', tension:0.3, fill:true, spanGaps:true },
           { label:'KPI (%)', data: chartLabels.map(()=>s.kpi), borderColor:'#dc2626', borderDash:[6,4], pointRadius:0 }
         ]},
-        options:{ responsive:true, maintainAspectRatio:true, scales:{ y:{ min:50, max:100, ticks:{ callback:v=>v+'%' } } }, plugins:{ legend:{ position:'bottom' } } }
+        options:{ responsive:true, maintainAspectRatio: chartAspect(), scales:{ y:{ min:50, max:100, ticks:{ callback:v=>v+'%' } } }, plugins:{ legend:{ position:'bottom' } } }
       });
     }
   } catch (e) { console.error('Chart analisis kelas error:', e); }
@@ -2007,7 +2156,7 @@ function renderAnalisisKeseluruhan() {
           { label:'Purata Tahunan (%)', data: kelasPurataList.map(x=>x.purata), backgroundColor: kelasPurataList.map(x => x.purata==null?'#cbd5e1':(x.purata>=s.kpi?'rgba(22,163,74,0.7)':'rgba(220,38,38,0.7)')), borderRadius:6 },
           { label:'KPI', data: kelasPurataList.map(()=>s.kpi), type:'line', borderColor:'#f59e0b', borderDash:[6,4], pointRadius:0 }
         ]},
-        options:{ responsive:true, maintainAspectRatio:true, scales:{ y:{ min:50, max:100, ticks:{ callback:v=>v+'%' } } }, plugins:{ legend:{ position:'bottom' } } }
+        options:{ responsive:true, maintainAspectRatio: chartAspect(), scales:{ y:{ min:50, max:100, ticks:{ callback:v=>v+'%' } } }, plugins:{ legend:{ position:'bottom' } } }
       });
     }
     const trendData = BULAN.slice(1).map((_,idx)=> hitungPurataBulan(tahun, idx+1, aliran));
@@ -2020,7 +2169,7 @@ function renderAnalisisKeseluruhan() {
           { label:'Purata Sekolah (%)', data: trendData.map(v=>v==null?null:Number(v.toFixed(2))), borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,0.1)', tension:0.3, fill:true, spanGaps:true },
           { label:'KPI (%)', data: BULAN.slice(1).map(()=>s.kpi), borderColor:'#dc2626', borderDash:[6,4], pointRadius:0 }
         ]},
-        options:{ responsive:true, maintainAspectRatio:true, scales:{ y:{ min:70, max:100, ticks:{ callback:v=>v+'%' } } }, plugins:{ legend:{ position:'bottom' } } }
+        options:{ responsive:true, maintainAspectRatio: chartAspect(), scales:{ y:{ min:70, max:100, ticks:{ callback:v=>v+'%' } } }, plugins:{ legend:{ position:'bottom' } } }
       });
     }
   } catch (e) { console.error('Chart keseluruhan error:', e); }
@@ -2527,6 +2676,8 @@ function init() {
     const topBulan = document.getElementById('top-kelas-bulan');
     if (topBulan) topBulan.value = String(bulanSekarang);
     renderCadanganIntervensi();
+    const mpt = document.getElementById('mobile-page-title');
+    if (mpt) mpt.textContent = PAGE_TITLES['dashboard'];
   } catch (e) {
     console.error('Init error:', e);
     toast('⚠️ Ralat init: ' + e.message, true);
@@ -2536,6 +2687,18 @@ function init() {
 // 让 index.html 可反向调用
 window.syncFromDailySystem = syncFromDailySystemBridge;
 window.manualSyncFromDaily = manualSyncFromDaily;
+
+// ===== 响应式切换监听 =====
+let _wasMobile = window.innerWidth < 768;
+window.addEventListener('resize', () => {
+  const nowMobile = window.innerWidth < 768;
+  if (nowMobile !== _wasMobile) {
+    _wasMobile = nowMobile;
+    // 重新渲染当前激活页，让图表重新计算尺寸
+    const activeBtn = document.querySelector('.nav-btn.active');
+    if (activeBtn) activeBtn.click();
+  }
+});
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
