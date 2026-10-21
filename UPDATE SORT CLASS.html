@@ -2,7 +2,7 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SISTEM ANALISIS DATA KEHADIRAN MURID</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -45,7 +45,6 @@ main { padding: 1.5rem; max-width: 1500px; margin: 0 auto; }
 .page.active { display: block; animation: fadeIn 0.3s; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Dashboard */
 .dash-hero { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #8b5cf6 100%); border-radius: 20px; padding: 2rem; color: white; margin-bottom: 1.5rem; position: relative; overflow: hidden; box-shadow: var(--shadow-lg); }
 .dash-hero::before { content: ''; position: absolute; top: -50%; right: -10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%); border-radius: 50%; }
 .dash-hero::after { content: ''; position: absolute; bottom: -30%; left: -5%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); border-radius: 50%; }
@@ -1042,8 +1041,96 @@ function manualSyncFromDaily() {
     tahunAktif = Object.keys(state.dataTahunan)[0];
     state.tahunAktif = tahunAktif;
   }
-  renderHeader(); renderDashboard();
+  recalcEnrolmenFromDaily();
+  renderHeader();
+  renderDataAsas();
+  renderDashboard();
   toast(ok ? '✅ Data diselaraskan dari sistem点名' : 'ℹ️ Sistem点名 tidak aktif. Buka index.html untuk sync.', !ok);
+}
+
+/* ============================================================
+   核心修复：从点名系统重算"年初"初始 enrolmen
+   —— 用 studentEvents 反推，避免人数倍增
+   ============================================================ */
+function recalcEnrolmenFromDaily() {
+  try {
+    const rawEvents = localStorage.getItem('studentEvents_2026');
+    const rawSd = localStorage.getItem('schoolData_2026');
+    if (!rawEvents && !rawSd) return;
+    const events = rawEvents ? JSON.parse(rawEvents) : [];
+    const sd = rawSd ? JSON.parse(rawSd) : {};
+    const yd = state.dataTahunan[tahunAktif];
+    if (!yd) return;
+
+    // 学年开始日：优先 1 月 1 日（若年份不同可调）
+    const SEM_START = `${tahunAktif}-01-01`;
+
+    // 建立"所有曾加入学生"索引
+    const allStudentsMap = {};
+    events.forEach(ev => {
+      const k = `${ev.kelas}_${ev.no}`;
+      if (ev.jenis === 'masuk') {
+        allStudentsMap[k] = {
+          kelas: ev.kelas, no: ev.no,
+          gender: ev.gender, race: (ev.race || 'lain').toLowerCase(),
+          joinDate: ev.tarikh, leaveDate: null
+        };
+      } else if (ev.jenis === 'keluar') {
+        if (allStudentsMap[k]) allStudentsMap[k].leaveDate = ev.tarikh;
+        else allStudentsMap[k] = {
+          kelas: ev.kelas, no: ev.no,
+          gender: ev.gender, race: (ev.race || 'lain').toLowerCase(),
+          joinDate: SEM_START, leaveDate: ev.tarikh
+        };
+      }
+    });
+    // 补充 schoolData 兜底（旧数据无 event）
+    Object.keys(sd).forEach(clsName => {
+      (sd[clsName] || []).forEach(s => {
+        const k = `${clsName}_${s.no}`;
+        if (!allStudentsMap[k]) {
+          allStudentsMap[k] = {
+            kelas: clsName, no: s.no,
+            gender: s.gender, race: (s.race || 'lain').toLowerCase(),
+            joinDate: s.joinDate || SEM_START, leaveDate: null
+          };
+        }
+      });
+    });
+
+    // 所有曾出现的班级
+    const allClassNames = new Set(Object.keys(sd));
+    Object.values(allStudentsMap).forEach(st => allClassNames.add(st.kelas));
+
+    let changed = false;
+    allClassNames.forEach(clsName => {
+      let kelas = yd.kelas.find(k => k.nama === clsName);
+      if (!kelas) {
+        kelas = { id: nextId(yd.kelas), nama: clsName, aliran: 'D1/T1',
+          melayu_l:0,melayu_p:0,cina_l:0,cina_p:0,india_l:0,india_p:0,lain_l:0,lain_p:0 };
+        yd.kelas.push(kelas);
+        changed = true;
+      }
+      const count = { melayu_l:0,melayu_p:0,cina_l:0,cina_p:0,india_l:0,india_p:0,lain_l:0,lain_p:0 };
+      Object.values(allStudentsMap).forEach(st => {
+        if (st.kelas !== clsName) return;
+        const joinedBeforeStart = !st.joinDate || st.joinDate <= SEM_START;
+        const leftAfterStart = !st.leaveDate || st.leaveDate > SEM_START;
+        if (!joinedBeforeStart || !leftAfterStart) return;
+        const race = st.race || 'lain';
+        const p = race==='melayu'?'melayu':race==='cina'?'cina':race==='india'?'india':'lain';
+        const g = st.gender==='L'?'l':'p';
+        count[`${p}_${g}`]++;
+      });
+      const oldSum = ['melayu_l','melayu_p','cina_l','cina_p','india_l','india_p','lain_l','lain_p']
+        .reduce((a,f)=>a+(Number(kelas[f])||0), 0);
+      const newSum = Object.values(count).reduce((a,c)=>a+c, 0);
+      if (oldSum !== newSum) changed = true;
+      Object.assign(kelas, count);
+    });
+    yd.kelas = sortKelasArray(yd.kelas);
+    if (changed) saveData();
+  } catch(e){ console.warn('recalcEnrolmenFromDaily error:', e); }
 }
 
 /* ============================================================
@@ -1077,6 +1164,7 @@ function tukarTahunAktif(y) {
   tahunAktif = Number(y);
   state.tahunAktif = tahunAktif;
   saveData();
+  recalcEnrolmenFromDaily();
   renderGlobalYearPicker(); renderYearList(); renderHeader(); renderDataAsas(); renderDashboard();
   const bp = document.getElementById('bulanan-pilih'); if (bp) bp.value = '';
   const ab = document.getElementById('an-bulan-pilih'); if (ab) ab.value = '';
@@ -2664,6 +2752,7 @@ function init() {
       tahunAktif = Object.keys(state.dataTahunan)[0];
       state.tahunAktif = tahunAktif;
     }
+    recalcEnrolmenFromDaily();
     fillAliranDropdowns();
     renderHeader();
     renderDataAsas();
@@ -2694,7 +2783,6 @@ window.addEventListener('resize', () => {
   const nowMobile = window.innerWidth < 768;
   if (nowMobile !== _wasMobile) {
     _wasMobile = nowMobile;
-    // 重新渲染当前激活页，让图表重新计算尺寸
     const activeBtn = document.querySelector('.nav-btn.active');
     if (activeBtn) activeBtn.click();
   }
