@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>学校日志与报表系统 2026 - Pro</title>
+<style>
+:root{--primary:#2196F3;--success:#4CAF50;--danger:#F44336;--warning:#FF9800;--info:#9C27B0;--border:#000;--bg:#f0f2f5;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background-color:var(--bg);margin:0;color:#333;}
+.hidden{display:none!important;}
+.top-nav{background:white;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 5px rgba(0,0,0,.05);position:sticky;top:0;z-index:1000;flex-wrap:wrap;gap:8px;}
+.top-nav h2{margin:0;font-size:18px;}
+.top-nav .links{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.top-nav .links a{padding:6px 12px;background:#e3f2fd;color:#1976D2;border-radius:6px;text-decoration:none;font-size:13px;font-weight:bold;}
+.top-nav .links a:hover{background:#bbdefb;}
+.lang-switcher select{padding:4px 8px;border-radius:4px;border:1px solid #ccc;font-weight:bold;}
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:2000;justify-content:center;align-items:center;}
+.modal-content{background:white;padding:20px;border-radius:8px;width:90%;max-width:700px;max-height:90vh;overflow-y:auto;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;border-bottom:1px solid #eee;padding-bottom:10px;}
+.close-btn{background:none;border:none;font-size:24px;cursor:pointer;color:#999;}
+.add-form{display:flex;gap:10px;margin-bottom:15px;background:#f9f9f9;padding:10px;border-radius:6px;flex-wrap:wrap;}
+.add-form input,.add-form select{padding:8px;border:1px solid #ccc;border-radius:4px;flex:1;min-width:100px;}
+.btn-action{flex:1;text-align:center;padding:10px;border-radius:6px;font-size:13px;font-weight:bold;color:white;cursor:pointer;border:none;display:flex;justify-content:center;align-items:center;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--success);color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:bold;z-index:3000;transition:transform .3s;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.error{background:var(--danger);}
+
+@media (min-width:768px){
+  .mobile-only{display:none!important;}
+  .desktop-container{max-width:1500px;margin:0 auto;padding:20px;display:flex;gap:20px;align-items:flex-start;}
+  .attendance-panel{flex:1;min-width:380px;background:white;padding:20px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1);display:flex;flex-direction:column;}
+  .log-panel{flex:1.8;min-width:750px;background:white;padding:20px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1);overflow-x:auto;}
+  .form-group{margin-bottom:12px;}
+  .form-group label{display:block;font-size:12px;font-weight:bold;color:#555;margin-bottom:4px;}
+  .form-group input,.form-group select{width:100%;padding:8px;font-size:14px;border-radius:4px;border:1px solid #ccc;}
+  .info-display{background:#e3f2fd;padding:10px;border-radius:6px;margin-bottom:15px;font-size:13px;display:flex;justify-content:space-between;}
+  .batch-buttons{display:flex;gap:10px;margin-bottom:10px;}
+  .batch-buttons button{flex:1;padding:10px;border:none;border-radius:6px;font-size:13px;font-weight:bold;color:white;cursor:pointer;}
+  .btn-all-present{background-color:var(--success);}
+  .btn-all-absent{background-color:var(--danger);}
+  .btn-manage{background-color:var(--info);}
+  .btn-backup{background-color:#009688;}
+  .btn-restore{background-color:#795548;}
+  .student-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:20px;max-height:480px;overflow-y:auto;padding-right:5px;}
+  .student-card{border:2px solid #ccc;border-radius:6px;padding:8px;cursor:pointer;background:#f9f9f9;font-size:13px;position:relative;}
+  .student-card.present{background:#e8f5e9;border-color:var(--success);}
+  .student-card.absent{background:#ffebee;border-color:var(--danger);text-decoration:line-through;color:#c62828;}
+  .student-card .no{position:absolute;top:4px;right:6px;font-size:10px;color:#999;}
+  .student-card .name{font-weight:bold;display:block;margin-top:4px;padding-right:25px;}
+  .student-card .gender{font-size:10px;color:#666;}
+  .btn-save{width:100%;padding:14px;background-color:var(--primary);color:white;border:none;border-radius:6px;font-size:16px;cursor:pointer;font-weight:bold;margin-top:auto;}
+  .log-header{text-align:center;font-size:18px;font-weight:bold;margin-bottom:12px;letter-spacing:2px;}
+  .info-row{display:flex;border:1px solid var(--border);border-bottom:none;}
+  .info-row>div{flex:1;padding:6px;text-align:center;border-right:1px solid var(--border);font-size:13px;}
+  .info-row>div:last-child{border-right:none;}
+  table.dt-table{width:100%;border-collapse:collapse;font-size:12px;text-align:center;}
+  .dt-table th,.dt-table td{border:1px solid var(--border);padding:5px 3px;}
+  .dt-table th{background-color:#f5f5f5;font-weight:normal;}
+  .global-stats{background:#fff8e1;border:2px solid #ffc107;padding:15px;border-radius:8px;display:flex;justify-content:space-around;flex-wrap:wrap;margin-top:15px;font-size:13px;}
+  .absent-list-box{margin-top:20px;border:1px solid #ddd;border-radius:6px;padding:10px;background:#fff;}
+  .absent-table{width:100%;border-collapse:collapse;font-size:12px;}
+  .absent-table th,.absent-table td{border:1px solid #ddd;padding:6px;text-align:center;}
+  .absent-table th{background-color:#ffebee;color:#c62828;}
+}
+
+@media (max-width:767px){
+  .desktop-only{display:none!important;}
+  .page{padding:15px;padding-bottom:80px;}
+  .info-card{background:white;border-radius:10px;padding:15px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+  .info-card input[type="date"]{width:100%;padding:10px;font-size:16px;border:1px solid #ddd;border-radius:8px;background:#f9f9f9;}
+  .class-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;}
+  .class-btn{background:white;border:2px solid #e0e0e0;border-radius:10px;padding:15px 5px;text-align:center;font-size:16px;font-weight:bold;color:#333;box-shadow:0 2px 5px rgba(0,0,0,.05);}
+  .class-btn:active{background:#f0f0f0;transform:scale(.98);}
+  .class-btn .count{display:block;font-size:11px;color:#888;font-weight:normal;margin-top:4px;}
+  .btn-log{width:100%;padding:15px;background:var(--primary);color:white;border:none;border-radius:10px;font-size:16px;font-weight:bold;margin-top:15px;}
+  .attendance-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;background:white;padding:10px 15px;border-radius:10px;}
+  .back-btn{background:none;border:none;font-size:15px;color:var(--primary);font-weight:bold;padding:0;}
+  .student-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin-bottom:20px;}
+  .student-card{background:#e8f5e9;border:2px solid var(--success);border-radius:8px;padding:12px 5px;text-align:center;position:relative;}
+  .student-card.absent{background:#ffebee;border-color:var(--danger);color:#c62828;text-decoration:line-through;}
+  .student-card .name{font-weight:bold;font-size:14px;display:block;}
+  .student-card .no{font-size:11px;color:#666;}
+  .bottom-action-bar{position:fixed;bottom:0;left:0;width:100%;background:white;padding:10px 15px;box-shadow:0 -2px 10px rgba(0,0,0,.1);display:flex;gap:10px;z-index:200;}
+  .btn-save-m{flex:2;background:var(--primary);color:white;border:none;padding:12px;border-radius:8px;font-size:16px;font-weight:bold;}
+  .btn-batch-m{flex:1;background:#607D8B;color:white;border:none;padding:12px;border-radius:8px;font-size:13px;font-weight:bold;}
+  .log-card{background:white;border-radius:10px;padding:15px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);border-left:5px solid var(--primary);}
+  .log-card-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;padding-bottom:10px;margin-bottom:10px;}
+  .log-card-title{font-size:18px;font-weight:bold;color:#1976D2;}
+  .log-card-rate{font-size:14px;font-weight:bold;color:#2e7d32;background:#e8f5e9;padding:4px 8px;border-radius:4px;}
+  .log-card-body{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center;}
+  .log-data-group{background:#f9f9f9;padding:8px;border-radius:6px;}
+  .log-data-group .title{font-size:11px;color:#666;margin-bottom:4px;}
+  .log-data-group .value{font-size:16px;font-weight:bold;}
+  .log-card-notes{margin-top:10px;font-size:12px;color:#d32f2f;background:#ffebee;padding:8px;border-radius:6px;}
+}
+
+@media print{
+  @page{size:portrait;margin:10mm;}
+  body{background:white!important;margin:0;padding:0;}
+  .top-nav,.desktop-container,.mobile-only,.modal-overlay,.toast{display:none!important;}
+  #printContainer{display:block!important;width:100%!important;margin:0!important;padding:0!important;}
+  .print-header{text-align:center;font-size:18px;font-weight:bold;margin-bottom:10px;}
+  .print-info-row{display:flex!important;flex-direction:row!important;border:1px solid #000!important;margin-bottom:10px;border-radius:4px;overflow:hidden;}
+  .print-info-row>div{flex:1;padding:6px 2px;text-align:center;border-right:1px solid #000!important;font-size:12px;}
+  .print-info-row>div:last-child{border-right:none!important;}
+  .print-table{width:100%;margin-bottom:10px;border-collapse:collapse;}
+  .print-table th,.print-table td{padding:5px 2px;border:1px solid #000!important;text-align:center;}
+  .print-table th{background:#f5f5f5!important;}
+  .print-stats{display:flex!important;border:1px solid #000!important;margin-bottom:10px;page-break-inside:avoid;justify-content:space-between;font-size:12px;padding:10px;}
+  .print-absent{display:block!important;page-break-inside:avoid;border:1px solid #000!important;padding:10px;}
+  .print-absent th,.print-absent td{border:1px solid #000!important;font-size:12px;padding:5px;text-align:center;}
+  body.print-desktop #desktopPrintView{display:block!important;}
+  body.print-desktop #mobilePrintView{display:none!important;}
+  body.print-desktop .print-table{font-size:11px;}
+  body.print-mobile #desktopPrintView{display:none!important;}
+  body.print-mobile #mobilePrintView{display:block!important;}
+  body.print-mobile .print-table{font-size:13px;}
+  body.print-mobile .print-table th,body.print-mobile .print-table td{padding:6px 4px;}
+  body.print-mobile .print-table .lp-merge{font-size:11px;color:#555;}
+}
+</style>
+</head>
+<body>
+
+<div class="top-nav no-print">
+  <h2 id="navTitle" data-i18n="app_title">🏫 学校日志系统</h2>
+  <div class="links">
+    <a href="UPDATE SORT CLASS.html" data-i18n="link_monthly">📊 月度报表</a>
+  </div>
+  <div class="lang-switcher">
+    <select id="langSelect" onchange="changeLanguage()">
+      <option value="zh">中文</option>
+      <option value="en">English</option>
+      <option value="ms">Bahasa Melayu</option>
+    </select>
+  </div>
+</div>
+
+<input type="file" id="globalRestoreInput" accept=".json" onchange="restoreData(event)" style="display:none;">
+<input type="file" id="csvImportInput" accept=".csv" onchange="importAllStudentsCSV(event)" style="display:none;">
+
+<!-- ==================== 电脑端 ==================== -->
+<div class="desktop-only desktop-container">
+  <div class="attendance-panel no-print">
+    <h3 style="margin-top:0;" data-i18n="console_title">📋 点名控制台</h3>
+    <div class="form-group">
+      <label data-i18n="date_label">日期</label>
+      <input type="date" id="dt_dateInput" onchange="syncDate('dt')">
+    </div>
+    <div class="info-display">
+      <span><span data-i18n="sem_label">学期</span>: <strong class="dispSem">-</strong></span>
+      <span><span data-i18n="week_label">周次</span>: <strong class="dispWeek">-</strong></span>
+      <span><span data-i18n="day_label">星期</span>: <strong class="dispDay">-</strong></span>
+    </div>
+    <div class="form-group">
+      <label data-i18n="select_class_title">选择班级</label>
+      <select id="dt_classSelect" onchange="changeClass('dt')"></select>
+    </div>
+    <div class="batch-buttons">
+      <button class="btn-all-present" onclick="batchSet(true)" data-i18n="btn_all_present">✅ 全部出席</button>
+      <button class="btn-all-absent" onclick="batchSet(false)" data-i18n="btn_all_absent">❌ 全部缺席</button>
+    </div>
+    <div class="batch-buttons">
+      <button class="btn-manage" onclick="openManageModal()" data-i18n="btn_manage">⚙️ 系统管理</button>
+    </div>
+    <div class="batch-buttons" style="margin-bottom:15px;">
+      <button class="btn-action btn-backup" onclick="backupData()" data-i18n="btn_backup">💾 备份数据</button>
+      <button class="btn-action btn-restore" onclick="document.getElementById('globalRestoreInput').click()" data-i18n="btn_restore">📂 恢复数据</button>
+    </div>
+    <div class="student-list" id="dt_studentList"></div>
+    <button class="btn-save" onclick="saveAttendance()" data-i18n="btn_save">💾 保存/更新今日点名数据</button>
+  </div>
+  <div class="log-panel">
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-bottom:10px;" class="no-print">
+      <button onclick="printReport('desktop')" style="padding:8px 15px;background:#455A64;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;" data-i18n="btn_print">🖨️ 打印报告</button>
+    </div>
+    <div id="desktopReportView">
+      <div class="log-header" data-i18n="log_header">学校日志 REKOD HARIAN SEKOLAH</div>
+      <div class="info-row">
+        <div><span data-i18n="sem_label">学期</span> <strong class="dispSem">-</strong></div>
+        <div><span data-i18n="week_label">周次</span> <strong class="dispWeek">-</strong></div>
+        <div><span data-i18n="day_label">星期</span> <strong class="dispDay">-</strong></div>
+        <div><span data-i18n="date_label">日期</span> <strong class="dispDate">-</strong></div>
+      </div>
+      <table class="dt-table">
+        <thead>
+          <tr>
+            <th rowspan="2" data-i18n="th_class">项目</th>
+            <th colspan="2" data-i18n="th_total">在籍</th>
+            <th colspan="2" data-i18n="th_present">出席</th>
+            <th colspan="2" data-i18n="th_absent">缺席</th>
+            <th rowspan="2" data-i18n="th_notes">备注</th>
+            <th rowspan="2" data-i18n="th_rate">出席率</th>
+          </tr>
+          <tr><th>L</th><th>P</th><th>L</th><th>P</th><th>L</th><th>P</th></tr>
+        </thead>
+        <tbody id="dt_logTableBody"></tbody>
+      </table>
+      <div class="global-stats">
+        <div style="text-align:center;"><span data-i18n="stat_total">今日全校总人数</span><br><strong id="dt_globalTotal" style="font-size:18px;color:#d32f2f;">-</strong></div>
+        <div style="text-align:center;"><span data-i18n="stat_present">今日全级出席</span><br><strong id="dt_globalPresent" style="font-size:18px;color:#2e7d32;">-</strong></div>
+        <div style="text-align:center;"><span data-i18n="stat_absent">今日全级缺席</span><br><strong id="dt_globalAbsent" style="font-size:18px;color:#d32f2f;">-</strong></div>
+        <div style="text-align:center;"><span data-i18n="stat_rate">全级出席率</span><br><strong id="dt_globalPercent" style="font-size:18px;color:#1976D2;">-</strong></div>
+      </div>
+      <div class="absent-list-box">
+        <h4 style="margin:0 0 10px 0;color:#c62828;" data-i18n="absent_title">📝 缺席学生名单</h4>
+        <table class="absent-table">
+          <thead><tr><th data-i18n="th_absent_class">班级</th><th data-i18n="th_absent_no">编号</th><th data-i18n="th_absent_name">姓名</th><th data-i18n="th_absent_gender">性别</th></tr></thead>
+          <tbody id="dt_absentListBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 手机端 ==================== -->
+<div class="mobile-only no-print">
+  <div class="page" id="m_pageHome">
+    <div class="info-card">
+      <label data-i18n="date_label">选择日期</label>
+      <input type="date" id="m_dateInput" onchange="syncDate('m')">
+      <div class="info-row" style="display:flex;justify-content:space-between;margin-top:10px;font-size:13px;background:#e3f2fd;padding:10px;border-radius:8px;">
+        <span><span data-i18n="sem_label">学期</span>: <strong class="dispSem">-</strong></span>
+        <span><span data-i18n="week_label">周次</span>: <strong class="dispWeek">-</strong></span>
+        <span><span data-i18n="day_label">星期</span>: <strong class="dispDay">-</strong></span>
+      </div>
+    </div>
+    <div style="font-size:15px;font-weight:bold;margin:10px 0;" data-i18n="select_class_title_m">请选择班级进行点名：</div>
+    <div class="class-grid" id="m_classGrid"></div>
+    <button class="btn-log" onclick="goToPage('m_pageLog')" data-i18n="btn_view_log">📊 查看学校日志</button>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button onclick="backupData()" style="flex:1;padding:10px;border:1px solid #ddd;background:white;border-radius:8px;font-size:13px;" data-i18n="btn_backup">💾 备份</button>
+      <button onclick="document.getElementById('globalRestoreInput').click()" style="flex:1;padding:10px;border:1px solid #ddd;background:white;border-radius:8px;font-size:13px;" data-i18n="btn_restore">📂 恢复</button>
+      <button onclick="openManageModal()" style="flex:1;padding:10px;border:1px solid #ddd;background:white;border-radius:8px;font-size:13px;" data-i18n="btn_manage">⚙️ 管理</button>
+    </div>
+  </div>
+  <div class="page hidden" id="m_pageAttendance">
+    <div class="attendance-header">
+      <button class="back-btn" onclick="goToPage('m_pageHome')">❮ <span data-i18n="btn_back">返回</span></button>
+      <h3 style="margin:0;font-size:18px;" id="m_currentClassName">-</h3>
+      <div style="width:50px;"></div>
+    </div>
+    <div style="text-align:center;font-size:12px;color:#666;margin-bottom:10px;" data-i18n="attendance_tip">默认全员出席。点击学生名字标记缺席。</div>
+    <div class="student-grid" id="m_studentList"></div>
+    <div class="bottom-action-bar">
+      <button class="btn-batch-m" onclick="batchSet(true)" data-i18n="btn_all_present">全部出席</button>
+      <button class="btn-batch-m" onclick="batchSet(false)" style="background:#F44336;" data-i18n="btn_all_absent">全部缺席</button>
+      <button class="btn-save-m" onclick="saveAttendance()" data-i18n="btn_save">💾 保存</button>
+    </div>
+  </div>
+  <div class="page hidden" id="m_pageLog">
+    <div class="attendance-header">
+      <button class="back-btn" onclick="goToPage('m_pageHome')">❮ <span data-i18n="btn_back">返回</span></button>
+      <h3 style="margin:0;font-size:18px;" data-i18n="log_title">📊 学校日志</h3>
+      <button class="back-btn" onclick="printReport('mobile')" style="color:#455A64;" data-i18n="btn_print">🖨️</button>
+    </div>
+    <div class="info-card" style="padding:10px;margin-bottom:5px;text-align:center;font-size:13px;">
+      <span data-i18n="sem_label">学期</span>: <strong class="dispSem">-</strong> |
+      <span data-i18n="week_label">周次</span>: <strong class="dispWeek">-</strong> |
+      <span data-i18n="date_label">日期</span>: <strong class="dispDate">-</strong>
+    </div>
+    <div id="m_logCardContainer"></div>
+    <div class="global-stats" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:15px;margin-top:15px;">
+      <div style="text-align:center;"><span style="font-size:12px;color:#666;" data-i18n="stat_total">全校总人数</span><br><strong id="m_globalTotal" style="font-size:18px;color:#d32f2f;">-</strong></div>
+      <div style="text-align:center;"><span style="font-size:12px;color:#666;" data-i18n="stat_present">全级出席</span><br><strong id="m_globalPresent" style="font-size:18px;color:#2e7d32;">-</strong></div>
+      <div style="text-align:center;"><span style="font-size:12px;color:#666;" data-i18n="stat_absent">全级缺席</span><br><strong id="m_globalAbsent" style="font-size:18px;color:#d32f2f;">-</strong></div>
+      <div style="text-align:center;"><span style="font-size:12px;color:#666;" data-i18n="stat_rate">全级出席率</span><br><strong id="m_globalPercent" style="font-size:18px;color:#1976D2;">-</strong></div>
+    </div>
+    <div class="absent-list-box">
+      <h4 style="margin:0 0 10px 0;color:#c62828;font-size:14px;" data-i18n="absent_title">📝 缺席学生名单</h4>
+      <table class="absent-table" style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr><th data-i18n="th_absent_class">班级</th><th data-i18n="th_absent_name">姓名</th><th data-i18n="th_absent_gender">性别</th></tr></thead>
+        <tbody id="m_absentListBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 打印容器 ==================== -->
+<div id="printContainer" style="display:none;">
+  <div id="desktopPrintView">
+    <div class="print-header" data-i18n="log_header">学校日志</div>
+    <div class="print-info-row">
+      <div><span data-i18n="sem_label">学期</span> <strong class="dispSem">-</strong></div>
+      <div><span data-i18n="week_label">周次</span> <strong class="dispWeek">-</strong></div>
+      <div><span data-i18n="day_label">星期</span> <strong class="dispDay">-</strong></div>
+      <div><span data-i18n="date_label">日期</span> <strong class="dispDate">-</strong></div>
+    </div>
+    <table class="print-table">
+      <thead>
+        <tr>
+          <th rowspan="2" data-i18n="th_class">项目</th>
+          <th colspan="2" data-i18n="th_total">在籍</th>
+          <th colspan="2" data-i18n="th_present">出席</th>
+          <th colspan="2" data-i18n="th_absent">缺席</th>
+          <th rowspan="2" data-i18n="th_notes">备注</th>
+          <th rowspan="2" data-i18n="th_rate">出席率</th>
+        </tr>
+        <tr><th>L</th><th>P</th><th>L</th><th>P</th><th>L</th><th>P</th></tr>
+      </thead>
+      <tbody id="printTableBodyDt"></tbody>
+    </table>
+    <div class="print-stats">
+      <div style="text-align:center;"><span data-i18n="stat_total">全校总人数</span><br><strong id="printGlobalTotalDt">-</strong></div>
+      <div style="text-align:center;"><span data-i18n="stat_present">全级出席</span><br><strong id="printGlobalPresentDt">-</strong></div>
+      <div style="text-align:center;"><span data-i18n="stat_absent">全级缺席</span><br><strong id="printGlobalAbsentDt">-</strong></div>
+      <div style="text-align:center;"><span data-i18n="stat_rate">全级出席率</span><br><strong id="printGlobalPercentDt">-</strong></div>
+    </div>
+    <div class="print-absent">
+      <h4 style="margin:0 0 10px 0;color:#000;" data-i18n="absent_title">📝 缺席学生名单</h4>
+      <table class="print-absent-table" style="width:100%;border-collapse:collapse;">
+        <thead><tr><th data-i18n="th_absent_class">班级</th><th data-i18n="th_absent_no">编号</th><th data-i18n="th_absent_name">姓名</th><th data-i18n="th_absent_gender">性别</th></tr></thead>
+        <tbody id="printAbsentListBodyDt"></tbody>
+      </table>
+    </div>
+  </div>
+  <div id="mobilePrintView">
+    <div class="print-header" data-i18n="log_header">学校日志</div>
+    <div class="print-info-row">
+      <div><span data-i18n="sem_label">学期</span>: <strong class="dispSem">-</strong></div>
+      <div><span data-i18n="week_label">周次</span>: <strong class="dispWeek">-</strong></div>
+      <div><span data-i18n="day_label">星期</span>: <strong class="dispDay">-</strong></div>
+      <div><span data-i18n="date_label">日期</span>: <strong class="dispDate">-</strong></div>
+    </div>
+    <table class="print-table">
+      <thead>
+        <tr>
+          <th data-i18n="th_class_short">班级</th>
+          <th data-i18n="th_total_short">在籍 (L/P)</th>
+          <th data-i18n="th_present_short">出席 (L/P)</th>
+          <th data-i18n="th_absent_short">缺席 (L/P)</th>
+          <th data-i18n="th_rate_short">出席率</th>
+        </tr>
+      </thead>
+      <tbody id="printTableBodyMb"></tbody>
+    </table>
+    <div class="print-stats">
+      <div style="text-align:center;"><span data-i18n="stat_total">全校总人数</span><br><strong id="printGlobalTotalMb">-</strong></div>
+      <div style="text-align:center;"><span data-i18n="stat_present">全级出席</span><br><strong id="printGlobalPresentMb">-</strong></div>
+      <div style="text-align:center;"><span data-i18n="stat_absent">全级缺席</span><br><strong id="printGlobalAbsentMb">-</strong></div>
+      <div style="text-align:center;"><span data-i18n="stat_rate">全级出席率</span><br><strong id="printGlobalPercentMb">-</strong></div>
+    </div>
+    <div class="print-absent">
+      <h4 style="margin:0 0 10px 0;color:#000;" data-i18n="absent_title">📝 缺席学生名单</h4>
+      <table class="print-absent-table" style="width:100%;border-collapse:collapse;">
+        <thead><tr><th data-i18n="th_absent_class">班级</th><th data-i18n="th_absent_name">姓名</th><th data-i18n="th_absent_gender">性别</th></tr></thead>
+        <tbody id="printAbsentListBodyMb"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 管理弹窗 ==================== -->
+<div id="manageModal" class="modal-overlay no-print">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 style="margin:0;" data-i18n="modal_manage">⚙️ 系统管理</h3>
+      <button class="close-btn" onclick="closeManageModal()">×</button>
+    </div>
+    <div style="background:#f5f5f5;padding:10px;border-radius:8px;margin-bottom:15px;">
+      <p style="font-size:12px;margin:0 0 10px 0;color:#555;" data-i18n="csv_tip">上传 CSV 批量导入 (Class,Name,Gender,Race)</p>
+      <div style="display:flex;gap:10px;">
+        <button onclick="document.getElementById('csvImportInput').click()" style="flex:1;background:#2196F3;color:white;border:none;padding:10px;border-radius:6px;font-size:14px;cursor:pointer;font-weight:bold;" data-i18n="btn_upload">上传 CSV</button>
+        <button onclick="downloadAllStudentsTemplate()" style="flex:1;background:#FF9800;color:white;border:none;padding:10px;border-radius:6px;font-size:14px;cursor:pointer;font-weight:bold;" data-i18n="btn_template">下载模板</button>
+        <button onclick="exportAllStudentsCSV()" style="flex:1;background:#4CAF50;color:white;border:none;padding:10px;border-radius:6px;font-size:14px;cursor:pointer;font-weight:bold;" data-i18n="btn_export_csv">导出 CSV</button>
+      </div>
+    </div>
+    <h4 style="margin:15px 0 10px 0;" data-i18n="manage_classes">🏫 班级管理</h4>
+    <div style="display:flex;gap:10px;margin-bottom:10px;">
+      <input type="text" id="newClassName" placeholder="新班级名称" style="flex:1;padding:8px;border:1px solid #ccc;border-radius:6px;">
+      <button onclick="addClass()" style="background:#FF5722;color:white;border:none;padding:8px 15px;border-radius:6px;cursor:pointer;" data-i18n="btn_add">添加</button>
+    </div>
+    <div id="classManageList" style="max-height:200px;overflow-y:auto;border:1px solid #eee;border-radius:6px;"></div>
+    <h4 style="margin:20px 0 10px 0;" data-i18n="manage_students">👨‍🎓 学生管理</h4>
+    <div style="display:flex;gap:10px;margin-bottom:10px;">
+      <select id="manageClassSelect" onchange="renderStudentManageList()" style="flex:1;padding:8px;border:1px solid #ccc;border-radius:6px;"></select>
+      <button onclick="reorderStudentNumbers()" style="background:#607D8B;color:white;border:none;padding:8px 15px;border-radius:6px;cursor:pointer;" data-i18n="btn_reorder">重排</button>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+      <input type="text" id="newName" placeholder="学生姓名" style="flex:2;min-width:120px;padding:8px;border:1px solid #ccc;border-radius:6px;">
+      <select id="newGender" style="width:70px;padding:8px;border:1px solid #ccc;border-radius:6px;">
+        <option value="L">L</option>
+        <option value="P">P</option>
+      </select>
+      <select id="newRace" style="width:100px;padding:8px;border:1px solid #ccc;border-radius:6px;" title="种族（可选）">
+        <option value="lain">Lain-lain</option>
+        <option value="melayu">Melayu</option>
+        <option value="cina">Cina</option>
+        <option value="india">India</option>
+      </select>
+      <input type="date" id="newJoinDate" style="padding:8px;border:1px solid #ccc;border-radius:6px;" title="加入日期">
+      <button onclick="addStudent()" style="background:#4CAF50;color:white;border:none;padding:8px 15px;border-radius:6px;cursor:pointer;" data-i18n="btn_add">添加</button>
+    </div>
+    <div id="studentManageList" style="max-height:280px;overflow-y:auto;border:1px solid #eee;border-radius:6px;"></div>
+    <h4 style="margin:20px 0 10px 0;" data-i18n="manage_events">📋 学生流动记录</h4>
+    <div id="eventList" style="max-height:150px;overflow-y:auto;border:1px solid #eee;border-radius:6px;font-size:12px;"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= i18n ================= */
+const i18n = {
+  zh:{app_title:"🏫 学校日志系统",link_monthly:"📊 月度报表",console_title:"📋 点名控制台",date_label:"日期",sem_label:"学期",week_label:"周次",day_label:"星期",
+    select_class_title:"选择班级",select_class_title_m:"请选择班级进行点名：",btn_all_present:"✅ 全部出席",btn_all_absent:"❌ 全部缺席",btn_manage:"⚙️ 系统管理",
+    btn_backup:"💾 备份数据",btn_restore:"📂 恢复数据",btn_save:"💾 保存",btn_print:"🖨️ 打印报告",btn_back:"返回",
+    attendance_tip:"默认全员出席。点击学生名字标记缺席。",btn_view_log:"📊 查看学校日志",log_title:"📊 学校日志",log_header:"学校日志 REKOD HARIAN SEKOLAH",
+    th_class:"项目",th_total:"在籍",th_present:"出席",th_absent:"缺席",th_notes:"备注",th_rate:"出席率",
+    th_class_short:"班级",th_total_short:"在籍 (L/P)",th_present_short:"出席 (L/P)",th_absent_short:"缺席 (L/P)",th_rate_short:"出席率",
+    stat_total:"今日全校总人数",stat_present:"今日全级出席",stat_absent:"今日全级缺席",stat_rate:"全级出席率",
+    absent_title:"📝 缺席学生名单",th_absent_class:"班级",th_absent_no:"编号",th_absent_name:"姓名",th_absent_gender:"性别",
+    modal_manage:"⚙️ 系统管理",csv_tip:"上传 CSV 批量导入 (Class,Name,Gender,Race)",btn_upload:"上传 CSV",btn_template:"下载模板",btn_export_csv:"导出 CSV",
+    manage_classes:"🏫 班级管理",manage_students:"👨‍🎓 学生管理",manage_events:"📋 学生流动记录",btn_add:"添加",btn_reorder:"重排",
+    days:['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],students_count:"人",
+    th_total_label:"在籍",th_present_label:"出席",th_absent_label:"缺席",th_notes_label:"备注",all_present_msg:"🎉 今日全员出席",total_label:"Total",
+    withdraw_btn:"退学",withdraw_prompt:"退学日期 (YYYY-MM-DD)",event_in:"加入",event_out:"退学",no_events:"暂无流动记录"},
+  en:{app_title:"🏫 School Log System",link_monthly:"📊 Monthly Report",console_title:"📋 Attendance Console",date_label:"Date",sem_label:"Sem",week_label:"Week",day_label:"Day",
+    select_class_title:"Select Class",select_class_title_m:"Select class to take attendance:",btn_all_present:"✅ All Present",btn_all_absent:"❌ All Absent",btn_manage:"⚙️ Manage",
+    btn_backup:"💾 Backup",btn_restore:"📂 Restore",btn_save:"💾 Save",btn_print:"🖨️ Print",btn_back:"Back",
+    attendance_tip:"All present by default. Tap name to mark absent.",btn_view_log:"📊 View School Log",log_title:"📊 School Log",log_header:"School Log REKOD HARIAN SEKOLAH",
+    th_class:"Class",th_total:"Enrolled",th_present:"Present",th_absent:"Absent",th_notes:"Notes",th_rate:"Rate",
+    th_class_short:"Class",th_total_short:"Enrolled (L/P)",th_present_short:"Present (L/P)",th_absent_short:"Absent (L/P)",th_rate_short:"Rate",
+    stat_total:"Total Students",stat_present:"Total Present",stat_absent:"Total Absent",stat_rate:"Overall Rate",
+    absent_title:"📝 Absentee List",th_absent_class:"Class",th_absent_no:"No.",th_absent_name:"Name",th_absent_gender:"Gender",
+    modal_manage:"⚙️ System Management",csv_tip:"Upload CSV (Class,Name,Gender,Race)",btn_upload:"Upload CSV",btn_template:"Template",btn_export_csv:"Export CSV",
+    manage_classes:"🏫 Manage Classes",manage_students:"👨‍🎓 Manage Students",manage_events:"📋 Student Events",btn_add:"Add",btn_reorder:"Reorder",
+    days:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],students_count:"students",
+    th_total_label:"Enrolled",th_present_label:"Present",th_absent_label:"Absent",th_notes_label:"Notes",all_present_msg:"🎉 All present today",total_label:"Total",
+    withdraw_btn:"Withdraw",withdraw_prompt:"Withdraw date (YYYY-MM-DD)",event_in:"Join",event_out:"Withdraw",no_events:"No events"},
+  ms:{app_title:"🏫 Sistem Log Sekolah",link_monthly:"📊 Laporan Bulanan",console_title:"📋 Konsol Kehadiran",date_label:"Tarikh",sem_label:"Sem",week_label:"Minggu",day_label:"Hari",
+    select_class_title:"Pilih Kelas",select_class_title_m:"Pilih kelas untuk ambil kehadiran:",btn_all_present:"✅ Semua Hadir",btn_all_absent:"❌ Semua Tidak Hadir",btn_manage:"⚙️ Urus",
+    btn_backup:"💾 Sandar",btn_restore:"📂 Pulihkan",btn_save:"💾 Simpan",btn_print:"🖨️ Cetak",btn_back:"Kembali",
+    attendance_tip:"Semua hadir. Ketik nama untuk tanda tidak hadir.",btn_view_log:"📊 Lihat Log",log_title:"📊 Log Sekolah",log_header:"Rekod Harian Sekolah",
+    th_class:"Kelas",th_total:"Keramaian",th_present:"Kedatangan",th_absent:"Tak Hadir",th_notes:"Catatan",th_rate:"Kadar",
+    th_class_short:"Kelas",th_total_short:"Keramaian (L/P)",th_present_short:"Hadir (L/P)",th_absent_short:"Tak Hadir (L/P)",th_rate_short:"Kadar",
+    stat_total:"Jumlah Pelajar",stat_present:"Jumlah Hadir",stat_absent:"Jumlah Tidak Hadir",stat_rate:"Kadar Keseluruhan",
+    absent_title:"📝 Senarai Tidak Hadir",th_absent_class:"Kelas",th_absent_no:"No.",th_absent_name:"Nama",th_absent_gender:"Jantina",
+    modal_manage:"⚙️ Pengurusan Sistem",csv_tip:"Muat naik CSV (Class,Name,Gender,Race)",btn_upload:"Muat Naik CSV",btn_template:"Templat",btn_export_csv:"Eksport CSV",
+    manage_classes:"🏫 Urus Kelas",manage_students:"👨‍🎓 Urus Pelajar",manage_events:"📋 Peristiwa Pelajar",btn_add:"Tambah",btn_reorder:"Susun",
+    days:['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'],students_count:"pelajar",
+    th_total_label:"Keramaian",th_present_label:"Hadir",th_absent_label:"Tidak Hadir",th_notes_label:"Catatan",all_present_msg:"🎉 Semua hadir hari ini",total_label:"Jumlah",
+    withdraw_btn:"Berhenti",withdraw_prompt:"Tarikh berhenti (YYYY-MM-DD)",event_in:"Masuk",event_out:"Keluar",no_events:"Tiada peristiwa"}
+};
+
+let currentLang = localStorage.getItem('appLang') || 'zh';
+
+/* ================= 马来西亚 B 组学期 2026 ================= */
+const SEMESTER_B_2026 = {
+  tahun: 2026,
+  sem1: { mula: '2026-01-12', tamat: '2026-05-22' },
+  sem2: { mula: '2026-06-08', tamat: '2026-12-04' },
+  cuti: [
+    '2026-03-16','2026-03-17','2026-03-18','2026-03-19','2026-03-20',
+    '2026-05-25','2026-05-26','2026-05-27','2026-05-28','2026-05-29',
+    '2026-06-01','2026-06-02','2026-06-03','2026-06-04','2026-06-05',
+    '2026-08-31','2026-09-01','2026-09-02','2026-09-03','2026-09-04',
+    '2026-11-09','2026-11-10','2026-11-11','2026-11-12','2026-11-13'
+  ]
+};
+
+function isSchoolDay(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  if (d.getDay() === 0 || d.getDay() === 6) return false;
+  return !SEMESTER_B_2026.cuti.includes(dateStr);
+}
+
+function schoolDaysInMonth(tahun, bulan) {
+  let count = 0;
+  const first = new Date(tahun, bulan - 1, 1);
+  const last  = new Date(tahun, bulan, 0);
+  for (let d = new Date(first); d <= last; d.setDate(d.getDate() + 1)) {
+    const ds = d.toISOString().slice(0, 10);
+    if (isSchoolDay(ds)) count++;
+  }
+  return count;
+}
+
+/* ================= 基础数据 ================= */
+const defaultSchoolData = {
+  "PRA": [
+    { no:1, name:"阿克兰", gender:"L", race:"melayu", joinDate:"2026-01-12" },
+    { no:2, name:"谢梓莹", gender:"P", race:"cina", joinDate:"2026-01-12" },
+    { no:3, name:"程嘉怡", gender:"P", race:"cina", joinDate:"2026-01-12" }
+  ],
+  "1M": [
+    { no:1, name:"陈健国", gender:"L", race:"cina", joinDate:"2026-01-12" },
+    { no:2, name:"石程企", gender:"L", race:"cina", joinDate:"2026-01-12" },
+    { no:3, name:"张梓恩", gender:"P", race:"cina", joinDate:"2026-01-12" }
+  ]
+};
+
+let currentClass = "";
+let schoolData   = JSON.parse(localStorage.getItem('schoolData_2026'))   || JSON.parse(JSON.stringify(defaultSchoolData));
+let statusStore  = JSON.parse(localStorage.getItem('schoolLogData_2026'))|| {};
+let historyData  = JSON.parse(localStorage.getItem('schoolHistory_2026'))|| {};
+let studentEvents= JSON.parse(localStorage.getItem('studentEvents_2026'))|| [];
+let currentDateStr = "";
+let isMobile = window.innerWidth < 768;
+
+/* ================= 语言切换 ================= */
+function changeLanguage() {
+  currentLang = document.getElementById('langSelect').value;
+  localStorage.setItem('appLang', currentLang);
+  applyLanguage();
+}
+
+function applyLanguage() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (i18n[currentLang][key]) el.innerHTML = i18n[currentLang][key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (i18n[currentLang][key]) el.placeholder = i18n[currentLang][key];
+  });
+  calculateWeekAndSemester();
+  renderAllViews();
+  renderHomeClasses();
+  if (document.getElementById('manageModal').style.display === 'flex') {
+    renderClassManageList();
+    renderStudentManageList();
+    renderEventList();
+  }
+}
+
+/* ================= 初始化 ================= */
+function init() {
+  document.getElementById('langSelect').value = currentLang;
+  const today = new Date();
+  const offset = today.getTimezoneOffset();
+  const localToday = new Date(today.getTime() - offset*60*1000);
+  const todayStr = localToday.toISOString().split('T')[0];
+  document.getElementById('dt_dateInput').value = todayStr;
+  document.getElementById('m_dateInput').value  = todayStr;
+  document.getElementById('newJoinDate').value  = todayStr;
+
+  // 迁移：为旧学生补 joinDate / race
+  Object.keys(schoolData).forEach(cls => {
+    schoolData[cls].forEach(s => {
+      if (!s.joinDate) s.joinDate = SEMESTER_B_2026.sem1.mula;
+      if (!s.race) s.race = 'lain';
+    });
+  });
+  localStorage.setItem('schoolData_2026', JSON.stringify(schoolData));
+
+  calculateWeekAndSemester();
+  updateClassDropdowns();
+  renderHomeClasses();
+  applyLanguage();
+  syncToMonthlySystem();
+}
+
+/* ================= 日期与学期 ================= */
+function syncDate(source) {
+  if (source === 'dt') document.getElementById('m_dateInput').value = document.getElementById('dt_dateInput').value;
+  else document.getElementById('dt_dateInput').value = document.getElementById('m_dateInput').value;
+  calculateWeekAndSemester();
+  renderAllViews();
+}
+
+function calculateWeekAndSemester() {
+  const dateVal = document.getElementById(isMobile ? 'm_dateInput' : 'dt_dateInput').value;
+  if (!dateVal) return;
+  currentDateStr = dateVal;
+  const selectedDate = new Date(dateVal + 'T00:00:00');
+  let semester = "-", week = "-";
+
+  if (selectedDate >= new Date(SEMESTER_B_2026.sem1.mula) && selectedDate <= new Date(SEMESTER_B_2026.sem1.tamat)) {
+    semester = "1";
+    week = Math.ceil((Math.abs(selectedDate - new Date(SEMESTER_B_2026.sem1.mula)) / 86400000 + 1) / 7);
+  } else if (selectedDate >= new Date(SEMESTER_B_2026.sem2.mula) && selectedDate <= new Date(SEMESTER_B_2026.sem2.tamat)) {
+    semester = "2";
+    week = Math.ceil((Math.abs(selectedDate - new Date(SEMESTER_B_2026.sem2.mula)) / 86400000 + 1) / 7);
+  }
+
+  const dayName = i18n[currentLang].days[selectedDate.getDay()];
+  const formattedDate = `${selectedDate.getDate()}.${selectedDate.getMonth()+1}.${selectedDate.getFullYear()}`;
+
+  document.querySelectorAll('.dispSem').forEach(el => el.innerText = semester);
+  document.querySelectorAll('.dispWeek').forEach(el => el.innerText = week);
+  document.querySelectorAll('.dispDay').forEach(el => el.innerText = dayName);
+  document.querySelectorAll('.dispDate').forEach(el => el.innerText = formattedDate);
+}
+
+/* ================= 学生状态 ================= */
+function getStatusKey(classNo, studentNo) { return `${currentDateStr}_${classNo}_${studentNo}`; }
+function getStudentStatus(cls, sNo) {
+  const key = getStatusKey(cls, sNo);
+  if (statusStore[key]) return statusStore[key];
+  if (historyData[currentDateStr] && historyData[currentDateStr][key]) return historyData[currentDateStr][key];
+  return { present: true };
+}
+
+/* ================= 班级下拉 ================= */
+function updateClassDropdowns() {
+  const sortedClasses = Object.keys(schoolData).sort();
+  const dtSelect = document.getElementById('dt_classSelect');
+  const mSelect  = document.getElementById('manageClassSelect');
+  if (dtSelect) {
+    const cur = dtSelect.value;
+    dtSelect.innerHTML = '';
+    sortedClasses.forEach(cls => dtSelect.add(new Option(cls, cls)));
+    if (cur && schoolData[cur]) dtSelect.value = cur;
+    else if (sortedClasses.length) dtSelect.value = sortedClasses[0];
+    currentClass = dtSelect.value;
+  }
+  if (mSelect) {
+    const cur = mSelect.value;
+    mSelect.innerHTML = '';
+    sortedClasses.forEach(cls => mSelect.add(new Option(cls, cls)));
+    if (cur && schoolData[cur]) mSelect.value = cur;
+  }
+}
+
+/* ================= 页面切换 ================= */
+function goToPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  document.getElementById(pageId).classList.remove('hidden');
+  if (pageId === 'm_pageLog') renderMobileLog();
+}
+
+/* ================= 渲染 ================= */
+function renderAllViews() {
+  if (isMobile) { renderMobileAttendance(); renderMobileLog(); }
+  else { renderDesktopAttendance(); renderDesktopLog(); }
+}
+
+function changeClass(source) {
+  if (source === 'dt') currentClass = document.getElementById('dt_classSelect').value;
+  renderDesktopAttendance();
+}
+
+function renderDesktopAttendance() {
+  const list = document.getElementById('dt_studentList');
+  list.innerHTML = '';
+  if (!currentClass || !schoolData[currentClass]) return;
+  schoolData[currentClass].sort((a,b)=>a.no-b.no).forEach(s => {
+    const st = getStudentStatus(currentClass, s.no);
+    const card = document.createElement('div');
+    card.className = `student-card ${st.present ? 'present' : 'absent'}`;
+    card.innerHTML = `<span class="no">#${s.no}</span><span class="name">${s.name}</span><span class="gender">(${s.gender})</span>`;
+    card.onclick = () => {
+      let st2 = getStudentStatus(currentClass, s.no);
+      st2.present = !st2.present;
+      statusStore[getStatusKey(currentClass, s.no)] = st2;
+      card.className = `student-card ${st2.present ? 'present' : 'absent'}`;
+      renderDesktopLog();
+    };
+    list.appendChild(card);
+  });
+  renderDesktopLog();
+}
+
+function renderHomeClasses() {
+  if (!isMobile) return;
+  const grid = document.getElementById('m_classGrid');
+  grid.innerHTML = '';
+  Object.keys(schoolData).sort().forEach(cls => {
+    const btn = document.createElement('div');
+    btn.className = 'class-btn';
+    btn.innerHTML = `${cls}<span class="count">${schoolData[cls].length} ${i18n[currentLang].students_count}</span>`;
+    btn.onclick = () => {
+      currentClass = cls;
+      document.getElementById('m_currentClassName').innerText = cls;
+      renderMobileAttendance();
+      goToPage('m_pageAttendance');
+    };
+    grid.appendChild(btn);
+  });
+}
+
+function renderMobileAttendance() {
+  const list = document.getElementById('m_studentList');
+  if (!list) return;
+  list.innerHTML = '';
+  if (!currentClass || !schoolData[currentClass]) return;
+  schoolData[currentClass].sort((a,b)=>a.no-b.no).forEach(s => {
+    const st = getStudentStatus(currentClass, s.no);
+    const card = document.createElement('div');
+    card.className = `student-card ${st.present ? '' : 'absent'}`;
+    card.innerHTML = `<span class="no">#${s.no}</span><span class="name">${s.name}</span>`;
+    card.onclick = () => {
+      let st2 = getStudentStatus(currentClass, s.no);
+      st2.present = !st2.present;
+      statusStore[getStatusKey(currentClass, s.no)] = st2;
+      card.className = `student-card ${st2.present ? '' : 'absent'}`;
+    };
+    list.appendChild(card);
+  });
+}
+
+function batchSet(isPresent) {
+  if (!currentClass) return;
+  schoolData[currentClass].forEach(s => {
+    let st = getStudentStatus(currentClass, s.no);
+    st.present = isPresent;
+    statusStore[getStatusKey(currentClass, s.no)] = st;
+  });
+  renderAllViews();
+}
+
+function saveAttendance() {
+  localStorage.setItem('schoolLogData_2026', JSON.stringify(statusStore));
+  if (!historyData[currentDateStr]) historyData[currentDateStr] = {};
+  for (let cls in schoolData) {
+    schoolData[cls].forEach(s => {
+      historyData[currentDateStr][getStatusKey(cls, s.no)] = getStudentStatus(cls, s.no);
+    });
+  }
+  localStorage.setItem('schoolHistory_2026', JSON.stringify(historyData));
+  syncToMonthlySystem();
+  showToast('✅ ' + (currentLang==='zh'?'点名数据已保存并同步到月度报表':currentLang==='en'?'Attendance saved and synced to monthly report':'Kehadiran disimpan dan diselaraskan ke laporan bulanan'));
+  if (isMobile) goToPage('m_pageHome');
+}
+
+/* ================= 日志渲染 ================= */
+function computeLogData() {
+  let data = [];
+  let grand = { totalL:0, totalP:0, pL:0, pP:0, aL:0, aP:0 };
+  let absentList = [];
+  Object.keys(schoolData).sort().forEach(cls => {
+    let rL=0, rP=0, rPL=0, rPP=0, rAL=0, rAP=0, rAbsentNos=[];
+    schoolData[cls].forEach(s => {
+      const st = getStudentStatus(cls, s.no);
+      if (s.gender === 'L') rL++; else rP++;
+      if (st.present) { if (s.gender === 'L') rPL++; else rPP++; }
+      else {
+        if (s.gender === 'L') rAL++; else rAP++;
+        rAbsentNos.push(s.no);
+        absentList.push({ cls, name: s.name, gender: s.gender });
+      }
+    });
+    grand.totalL += rL; grand.totalP += rP; grand.pL += rPL; grand.pP += rPP; grand.aL += rAL; grand.aP += rAP;
+    let rate = (rL+rP) > 0 ? (((rPL+rPP)/(rL+rP))*100).toFixed(2) + '%' : '-';
+    data.push({ cls, rL, rP, rPL, rPP, rAL, rAP, catatan: rAbsentNos.join(', '), rate });
+  });
+  return { data, grand, absentList };
+}
+
+function renderDesktopLog() {
+  const { data, grand, absentList } = computeLogData();
+  const tbody = document.getElementById('dt_logTableBody');
+  const absTbody = document.getElementById('dt_absentListBody');
+  tbody.innerHTML = data.map(d => `
+    <tr>
+      <td>${d.cls}</td><td>${d.rL}</td><td>${d.rP}</td>
+      <td>${d.rPL}</td><td>${d.rPP}</td>
+      <td>${d.rAL}</td><td>${d.rAP}</td>
+      <td style="color:#c62828;font-size:10px;">${d.catatan}</td>
+      <td style="font-weight:bold;color:#1976D2;">${d.rate}</td>
+    </tr>`).join('');
+  tbody.innerHTML += `
+    <tr style="font-weight:bold;background:#e0e0e0;">
+      <td>${i18n[currentLang].total_label}</td><td>${grand.totalL}</td><td>${grand.totalP}</td>
+      <td>${grand.pL}</td><td>${grand.pP}</td><td>${grand.aL}</td><td>${grand.aP}</td><td></td><td></td>
+    </tr>`;
+  if (absentList.length === 0) {
+    absTbody.innerHTML = `<tr><td colspan="4" style="color:#4CAF50;">${i18n[currentLang].all_present_msg}</td></tr>`;
+  } else {
+    absTbody.innerHTML = absentList.map(a => `<tr><td>${a.cls}</td><td></td><td>${a.name}</td><td>${a.gender}</td></tr>`).join('');
+  }
+  document.getElementById('dt_globalTotal').innerText   = grand.totalL + grand.totalP;
+  document.getElementById('dt_globalPresent').innerText = grand.pL + grand.pP;
+  document.getElementById('dt_globalAbsent').innerText  = grand.aL + grand.aP;
+  document.getElementById('dt_globalPercent').innerText = ((grand.pL+grand.pP)/(grand.totalL+grand.totalP)*100 || 0).toFixed(2) + '%';
+}
+
+function renderMobileLog() {
+  const { data, grand, absentList } = computeLogData();
+  const container = document.getElementById('m_logCardContainer');
+  const absTbody = document.getElementById('m_absentListBody');
+  if (container) {
+    container.innerHTML = data.map(d => `
+      <div class="log-card">
+        <div class="log-card-header">
+          <div class="log-card-title">${d.cls}</div>
+          <div class="log-card-rate">${d.rate}</div>
+        </div>
+        <div class="log-card-body">
+          <div class="log-data-group"><div class="title">${i18n[currentLang].th_total_label}</div><div class="value">${d.rL} / ${d.rP}</div></div>
+          <div class="log-data-group"><div class="title">${i18n[currentLang].th_present_label}</div><div class="value" style="color:#2e7d32;">${d.rPL} / ${d.rPP}</div></div>
+          <div class="log-data-group"><div class="title">${i18n[currentLang].th_absent_label}</div><div class="value" style="color:#c62828;">${d.rAL} / ${d.rAP}</div></div>
+        </div>
+        ${d.catatan ? `<div class="log-card-notes">${i18n[currentLang].th_notes_label}: ${d.catatan}</div>` : ''}
+      </div>`).join('');
+  }
+  if (absTbody) {
+    if (absentList.length === 0) absTbody.innerHTML = `<tr><td colspan="3" style="color:#4CAF50;padding:10px;">${i18n[currentLang].all_present_msg}</td></tr>`;
+    else absTbody.innerHTML = absentList.map(a => `<tr><td>${a.cls}</td><td>${a.name}</td><td>${a.gender}</td></tr>`).join('');
+  }
+  if (document.getElementById('m_globalTotal')) {
+    document.getElementById('m_globalTotal').innerText   = grand.totalL + grand.totalP;
+    document.getElementById('m_globalPresent').innerText = grand.pL + grand.pP;
+    document.getElementById('m_globalAbsent').innerText  = grand.aL + grand.aP;
+    document.getElementById('m_globalPercent').innerText = ((grand.pL+grand.pP)/(grand.totalL+grand.totalP)*100 || 0).toFixed(2) + '%';
+  }
+}
+
+/* ================= 打印 ================= */
+function printReport(mode) {
+  document.body.classList.remove('print-desktop','print-mobile');
+  document.body.classList.add(`print-${mode}`);
+  const { data, grand, absentList } = computeLogData();
+  if (mode === 'desktop') {
+    const dtTbody = document.getElementById('printTableBodyDt');
+    dtTbody.innerHTML = data.map(d => `
+      <tr>
+        <td>${d.cls}</td><td>${d.rL}</td><td>${d.rP}</td>
+        <td>${d.rPL}</td><td>${d.rPP}</td>
+        <td>${d.rAL}</td><td>${d.rAP}</td>
+        <td style="font-size:10px;">${d.catatan}</td>
+        <td style="font-weight:bold;">${d.rate}</td>
+      </tr>`).join('');
+    dtTbody.innerHTML += `
+      <tr style="font-weight:bold;background:#eee;">
+        <td>${i18n[currentLang].total_label}</td><td>${grand.totalL}</td><td>${grand.totalP}</td>
+        <td>${grand.pL}</td><td>${grand.pP}</td><td>${grand.aL}</td><td>${grand.aP}</td><td></td><td></td>
+      </tr>`;
+    document.getElementById('printGlobalTotalDt').innerText   = grand.totalL + grand.totalP;
+    document.getElementById('printGlobalPresentDt').innerText = grand.pL + grand.pP;
+    document.getElementById('printGlobalAbsentDt').innerText  = grand.aL + grand.aP;
+    document.getElementById('printGlobalPercentDt').innerText = ((grand.pL+grand.pP)/(grand.totalL+grand.totalP)*100 || 0).toFixed(2) + '%';
+    document.getElementById('printAbsentListBodyDt').innerHTML = absentList.length === 0
+      ? `<tr><td colspan="4" style="text-align:center;">${i18n[currentLang].all_present_msg}</td></tr>`
+      : absentList.map(a => `<tr><td>${a.cls}</td><td></td><td>${a.name}</td><td>${a.gender}</td></tr>`).join('');
+  } else {
+    const mbTbody = document.getElementById('printTableBodyMb');
+    mbTbody.innerHTML = data.map(d => `
+      <tr>
+        <td>${d.cls}</td>
+        <td><span class="lp-merge">L:</span>${d.rL} <span class="lp-merge">P:</span>${d.rP}</td>
+        <td><span class="lp-merge">L:</span>${d.rPL} <span class="lp-merge">P:</span>${d.rPP}</td>
+        <td><span class="lp-merge">L:</span>${d.rAL} <span class="lp-merge">P:</span>${d.rAP}</td>
+        <td style="font-weight:bold;">${d.rate}</td>
+      </tr>`).join('');
+    mbTbody.innerHTML += `
+      <tr style="font-weight:bold;background:#eee;">
+        <td>${i18n[currentLang].total_label}</td>
+        <td><span class="lp-merge">L:</span>${grand.totalL} <span class="lp-merge">P:</span>${grand.totalP}</td>
+        <td><span class="lp-merge">L:</span>${grand.pL} <span class="lp-merge">P:</span>${grand.pP}</td>
+        <td><span class="lp-merge">L:</span>${grand.aL} <span class="lp-merge">P:</span>${grand.aP}</td>
+        <td>${((grand.pL+grand.pP)/(grand.totalL+grand.totalP)*100 || 0).toFixed(2)}%</td>
+      </tr>`;
+    document.getElementById('printGlobalTotalMb').innerText   = grand.totalL + grand.totalP;
+    document.getElementById('printGlobalPresentMb').innerText = grand.pL + grand.pP;
+    document.getElementById('printGlobalAbsentMb').innerText  = grand.aL + grand.aP;
+    document.getElementById('printGlobalPercentMb').innerText = ((grand.pL+grand.pP)/(grand.totalL+grand.totalP)*100 || 0).toFixed(2) + '%';
+    document.getElementById('printAbsentListBodyMb').innerHTML = absentList.length === 0
+      ? `<tr><td colspan="3" style="text-align:center;">${i18n[currentLang].all_present_msg}</td></tr>`
+      : absentList.map(a => `<tr><td>${a.cls}</td><td>${a.name}</td><td>${a.gender}</td></tr>`).join('');
+  }
+  setTimeout(() => window.print(), 100);
+}
+
+/* ================= 管理 ================= */
+function openManageModal() {
+  document.getElementById('manageModal').style.display = 'flex';
+  renderClassManageList();
+  updateClassDropdowns();
+  renderStudentManageList();
+  renderEventList();
+  document.getElementById('newJoinDate').value = currentDateStr || new Date().toISOString().slice(0,10);
+}
+function closeManageModal() { document.getElementById('manageModal').style.display = 'none'; }
+
+/* ================= 备份/恢复 ================= */
+function backupData() {
+  const backup = { schoolData, statusStore, historyData, studentEvents };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `school_backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+
+function restoreData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.schoolData && data.statusStore) {
+        if (confirm("恢复备份？当前数据将被覆盖。")) {
+          schoolData    = data.schoolData;
+          statusStore   = data.statusStore;
+          historyData   = data.historyData   || {};
+          studentEvents = data.studentEvents || [];
+          localStorage.setItem('schoolData_2026', JSON.stringify(schoolData));
+          localStorage.setItem('schoolLogData_2026', JSON.stringify(statusStore));
+          localStorage.setItem('schoolHistory_2026', JSON.stringify(historyData));
+          localStorage.setItem('studentEvents_2026', JSON.stringify(studentEvents));
+          alert("✅ 恢复成功！页面将刷新。");
+          location.reload();
+        }
+      } else alert("文件格式不正确。");
+    } catch (err) { alert("读取失败: " + err.message); }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+/* ================= 班级管理 ================= */
+function renderClassManageList() {
+  const list = document.getElementById('classManageList');
+  if (!list) return;
+  list.innerHTML = '';
+  Object.keys(schoolData).sort().forEach(cls => {
+    const div = document.createElement('div');
+    div.style.cssText = "display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #eee;font-size:14px;";
+    div.innerHTML = `
+      <span><strong>${cls}</strong> (${schoolData[cls].length})</span>
+      <div>
+        <button onclick="renameClass('${cls}')" style="color:#2196F3;border:none;background:none;cursor:pointer;">改名</button>
+        <button onclick="deleteClass('${cls}')" style="color:#F44336;border:none;background:none;cursor:pointer;">删除</button>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+function addClass() {
+  const name = document.getElementById('newClassName').value.trim().toUpperCase();
+  if (!name) return alert("请输入班级名称");
+  if (schoolData[name]) return alert("班级已存在");
+  schoolData[name] = [];
+  localStorage.setItem('schoolData_2026', JSON.stringify(schoolData));
+  document.getElementById('newClassName').value = '';
+  renderClassManageList(); updateClassDropdowns(); renderHomeClasses();
+  syncToMonthlySystem();
+}
+
+function renameClass(oldName) {
+  const newName = prompt("新名称:", oldName);
+  if (!newName || newName.trim().toUpperCase() === oldName) return;
+  const formatted = newName.trim().toUpperCase();
+  if (schoolData[formatted]) return alert("名称已存在");
+  schoolData[formatted] = schoolData[oldName];
+  delete schoolData[oldName];
+  // 更新事件中的班级名
+  studentEvents.forEach(ev => { if (ev.kelas === oldName) ev.kelas = formatted; });
+  localStorage.setItem('schoolData_2026', JSON.stringify(schoolData));
+  localStorage.setItem('studentEvents_2026', JSON.stringify(studentEvents));
+  renderClassManageList(); updateClassDropdowns(); renderHomeClasses();
+  syncToMonthlySystem();
+}
+
+function deleteClass(cls) {
+  if (confirm(`删除班级 ${cls}？（不影响历史点名数据）`)) {
+    delete schoolData[cls];
+    localStorage.setItem('schoolData_2026', JSON.stringify(schoolData));
+    renderClassManageList(); updateClassDropdowns(); renderHomeClasses();
+    renderAllViews();
+  }
+}
+
+/* ================= 学生管理 ================= */
+function renderStudentManageList() {
+  const cls = document.getElementById('manageClassSelect').value;
+  const list = document.getElementById('studentManageList');
+  if (!list) return;
+  list.innerHTML = '';
+  if (!cls || !schoolData[cls]) return;
+  schoolData[cls].sort((a,b)=>a.no-b.no).forEach(s => {
+    const div = document.createElement('div');
+    div.style.cssText = "display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid #eee;font-size:13px;gap:6px;";
+    div.innerHTML = `
+      <span style="flex:1;">#${s.no} ${s.name} (${s.gender}${s.race?' · '+s.race:''})</span>
+      <button onclick="withdrawStudent('${cls}',${s.no})" style="color:#FF9800;border:none;background:none;cursor:pointer;font-size:12px;">${i18n[currentLang].withdraw_btn}</button>
+      <button onclick="deleteStudent('${cls}',${s.no})" style="color:#F44336;border:none;background:none;cursor:pointer;font-size:12px;">删除</button>`;
+    list.appendChild(div);
+  });
+}
+
+function addStudent() {
+  const cls = document.getElementById('manageClassSelect').value;
+  const name = document.getElementById('newName').value.trim();
+  const gender = document.getElementById('newGender').value;
+  const race = document.getElementById('newRace').value || 'lain';
+  const joinDate = document.getElementById('newJoinDate').value || currentDateStr || new Date().toISOString().slice(0,10);
+  if (!name) return alert("请输入姓名");
+  if (!cls) return alert("请先选择班级");
+
+  let students = schoolData[cls];
+  let nextNo = students.length > 0 ? Math.max(...students.map(s=>s.no)) + 1 : 1;
+  students.push({ no: nextNo, name, gender, race, joinDate });
+
+  studentEvents.push({
+    id: Date.now(), kelas: cls, no: nextNo, nama: name, gender, race,
+    tarikh: joinDate, jenis: 'masuk'
+  });
+  localStorage.setItem('studentEvents_2026', JSON.stringify(studentEvents));
+  localStorage.setItem('schoolData_2026', JSON.stringify(schoolData));
+  document.getElementById('newName').value = '';
+  renderStudentManageList(); renderHomeClasses(); renderAllViews();
+  renderEventList();
+  syncToMonthlySystem();
+  showToast(`✅ ${name} 已加入 ${cls}`);
+}
+
+function withdrawStudent(cls, no) {
+  const s = schoolData[cls].find(x => x.no === no);
+  if (!s) return;
+  const tarikh = prompt(`${i18n[currentLang].withdraw_prompt} (${s.name})`, currentDateStr || new Date().toISOString().slice(0,10));
+  if (!tarikh) return;
+
+  studentEvents.push({
+    id: Date.now(), kelas: cls, no, nama: s.name, gender: s.gender,
+    race: s.race || 'lain', tarikh, jenis: 'keluar'
+  });
+  localStorage.setItem('studentEvents_2026', JSON.stringify(studentEvents));
+
+  // 从活跃名单移除（历史点名数据保留）
+  schoolData[cls] = schoolData[cls].filter(x => x.no !== no);
+  localStorage.setItem('schoolData_2026', JSON.stringify(schoolData));
+
+  renderStudentManageList(); renderHomeClasses(); renderAllViews();
+  renderEventList();
+  syncToMonthlySystem();
+  showToast(`✅ ${s.name} 已标记退学 (${tarikh})`);
+}
+
+function deleteStudent(cls, no) {
+  if (confirm("彻底删除该学生？（含历史记录）")) {
+    schoolData[cls] = schoolData[cls].filter(s => s.no !== no);
+    localStorage.setItem('schoolData_2026', JSON.stringify(schoolData));
+    renderStudentManageList(); renderHomeClasses(); renderAllViews();
+    syncToMonthlySystem();
+  }
+}
+
+function reorderStudentNumbers() {
+  const cls = document.getElementById('manageClassSelect').value;
+  if (!cls) return;
+  schoolData[cls].sort((a,b)=>a.no-b.no);
+  schoolData[cls].forEach((s,i) => s.no = i + 1);
+  localStorage.setItem('schoolData_2026', JSON.stringify(schoolData));
+  renderStudentManageList(); renderAllViews();
+}
+
+function renderEventList() {
+  const el = document.getElementById('eventList');
+  if (!el) return;
+  if (studentEvents.length === 0) {
+    el.innerHTML = `<div style="padding:12px;color:#999;text-align:center;">${i18n[currentLang].no_events}</div>`;
+    return;
+  }
+  const sorted = [...studentEvents].sort((a,b) => (b.tarikh||'').localeCompare(a.tarikh||''));
+  el.innerHTML = sorted.map(ev => {
+    const color = ev.jenis === 'masuk' ? '#4CAF50' : '#F44336';
+    const label = ev.jenis === 'masuk' ? i18n[currentLang].event_in : i18n[currentLang].event_out;
+    return `<div style="display:flex;justify-content:space-between;padding:6px 10px;border-bottom:1px solid #eee;">
+      <span><b style="color:${color};">[${label}]</b> ${ev.nama} (${ev.kelas})</span>
+      <span style="color:#666;">${ev.tarikh}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ================= CSV 导入/导出 ================= */
+function downloadAllStudentsTemplate() {
+  const csvContent = "Class,Name,Gender,Race\n1M,张三,L,cina\n1M,李四,P,melayu\n2M,王五,L,india\n2M,陈六,P,lain\n";
+  const blob = new Blob(["\uFEFF" + csvContent], { type:'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `student_template.csv`;
+  a.click();
+}
+
+function exportAllStudentsCSV() {
+  let csv = "Class,Name,Gender,Race,JoinDate\n";
+  Object.keys(schoolData).sort().forEach(cls => {
+    schoolData[cls].forEach(s => {
+      csv += `${cls},${s.name},${s.gender},${s.race||'lain'},${s.joinDate||''}\n`;
+    });
+  });
+  const blob = new Blob(["\uFEFF" + csv], { type:'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `students_export_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('✅ CSV 已导出');
+}
+
+function importAllStudentsCSV(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const lines = e.target.result.split(/\r?\n/);
+    let count = 0;
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+      const parts = line.split(',');
+      if (parts.length >= 3) {
+        const cls = parts[0].trim().toUpperCase();
+        const name = parts[1].trim();
+        const gender = parts[2].trim().toUpperCase();
+        const race = (parts[3]||'lain').trim().toLowerCase();
+        const joinDate = (parts[4]||'').trim() || SEMESTER_B_2026.sem1.mula;
+        if (cls && name && (gender === 'L' || gender === 'P')) {
+          if (!schoolData[cls]) schoolData[cls] = [];
+          let nextNo = schoolData[cls].length > 0 ? Math.max(...schoolData[cls].map(s=>s.no)) + 1 : 1;
+          schoolData[cls].push({ no: nextNo, name, gender, race, joinDate });
+          studentEvents.push({
+            id: Date.now() + i, kelas: cls, no: nextNo, nama: name, gender, race,
+            tarikh: joinDate, jenis: 'masuk'
+          });
+          count++;
+        }
+      }
+    }
+    if (count > 0) {
+      localStorage.setItem('schoolData_2026', JSON.stringify(schoolData));
+      localStorage.setItem('studentEvents_2026', JSON.stringify(studentEvents));
+      alert(`✅ 已导入 ${count} 名学生`);
+      renderClassManageList(); updateClassDropdowns(); renderStudentManageList();
+      renderHomeClasses(); renderAllViews(); renderEventList();
+      syncToMonthlySystem();
+    } else alert("导入失败，请检查格式。");
+  };
+  reader.readAsText(file, "UTF-8");
+  event.target.value = '';
+}
+
+/* ================= 月度同步 ================= */
+/**
+ * 将每日点名 + 学生流动汇总到 UPDATE SORT CLASS 的 localStorage
+ * 存储键: kehadiran_murid_v1
+ */
+function syncToMonthlySystem() {
+  const STORAGE_KEY = 'kehadiran_murid_v1';
+  let state;
+  try {
+    state = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  } catch (e) { state = null; }
+  if (!state) {
+    console.warn('未找到月度系统数据，跳过同步（请先打开 UPDATE SORT CLASS 初始化）');
+    return;
+  }
+
+  const tahun = SEMESTER_B_2026.tahun;
+  if (!state.dataTahunan) state.dataTahunan = {};
+  if (!state.dataTahunan[tahun]) state.dataTahunan[tahun] = { kelas: [], bulanan: {} };
+  const yd = state.dataTahunan[tahun];
+
+  // 1. 确保班级存在
+  Object.keys(schoolData).forEach(clsName => {
+    if (!yd.kelas.find(k => k.nama === clsName)) {
+      yd.kelas.push({
+        id: nextKelasId(yd.kelas),
+        nama: clsName, aliran: 'D1/T1',
+        melayu_l: 0, melayu_p: 0, cina_l: 0, cina_p: 0,
+        india_l: 0, india_p: 0, lain_l: 0, lain_p: 0
+      });
+    }
+  });
+
+  // 2. 聚合每日数据
+  const monthlyDaily = {};
+  const leaveByStudent = {}; // key: `${cls}_${no}` → tarikh keluar
+  studentEvents.forEach(ev => {
+    if (ev.jenis === 'keluar') leaveByStudent[`${ev.kelas}_${ev.no}`] = ev.tarikh;
+  });
+
+  Object.keys(historyData).forEach(dateStr => {
+    const d = new Date(dateStr + 'T00:00:00');
+    if (d.getFullYear() !== tahun) return;
+    const bulan = d.getMonth() + 1;
+    if (!isSchoolDay(dateStr)) return;
+
+    Object.keys(schoolData).forEach(cls => {
+      let total = 0, present = 0;
+      schoolData[cls].forEach(s => {
+        const join = s.joinDate;
+        if (join && dateStr < join) return;
+        const leave = leaveByStudent[`${cls}_${s.no}`];
+        if (leave && dateStr >= leave) return;
+        const st = historyData[dateStr][`${dateStr}_${cls}_${s.no}`];
+        if (!st) return;
+        total++;
+        if (st.present) present++;
+      });
+      if (total === 0) return;
+      if (!monthlyDaily[bulan]) monthlyDaily[bulan] = {};
+      if (!monthlyDaily[bulan][cls]) monthlyDaily[bulan][cls] = {};
+      monthlyDaily[bulan][cls][dateStr] = { total, present };
+    });
+  });
+
+  // 3. 逐班计算 peratus & purata_hadir（两位小数）
+  for (let bulan = 1; bulan <= 12; bulan++) {
+    const bulanKey = String(bulan);
+    const daysInMonth = schoolDaysInMonth(tahun, bulan);
+    if (!yd.bulanan[bulanKey]) yd.bulanan[bulanKey] = {};
+    yd.kelas.forEach(kelas => {
+      const daily = monthlyDaily[bulan]?.[kelas.nama] || {};
+      const dates = Object.keys(daily);
+      if (dates.length === 0) return;
+      const totalSessions = dates.reduce((a, d) => a + daily[d].total, 0);
+      const totalPresent  = dates.reduce((a, d) => a + daily[d].present, 0);
+      const peratus = totalSessions > 0
+        ? Number(((totalPresent / totalSessions) * 100).toFixed(2))
+        : 0;
+      const purata = daysInMonth > 0
+        ? Number((totalPresent / daysInMonth).toFixed(2))
+        : 0;
+      if (!yd.bulanan[bulanKey][kelas.id]) yd.bulanan[bulanKey][kelas.id] = {};
+      const t = yd.bulanan[bulanKey][kelas.id];
+      t.peratus = peratus;
+      t.purata_hadir = purata;
+      t._bilangan_hari_diisi = dates.length;
+      t._bilangan_hari_sekolah = daysInMonth;
+    });
+  }
+
+  // 4. 学生流动 → enrolmen 月度更新
+  updateEnrolmenFromEvents(yd, tahun);
+
+  // 5. 保存
+  state.tahunAktif = tahun;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  console.log('✅ 已同步到月度系统');
+}
+
+function updateEnrolmenFromEvents(yd, tahun) {
+  // 清零 masuk/keluar 字段
+  Object.keys(yd.bulanan).forEach(bulan => {
+    Object.keys(yd.bulanan[bulan]).forEach(kelasId => {
+      const t = yd.bulanan[bulan][kelasId];
+      ['masuk_ml','masuk_mp','masuk_cl','masuk_cp','masuk_il','masuk_ip','masuk_ll','masuk_lp',
+       'keluar_ml','keluar_mp','keluar_cl','keluar_cp','keluar_il','keluar_ip','keluar_ll','keluar_lp']
+        .forEach(f => { t[f] = 0; });
+    });
+  });
+
+  const racePrefix = { melayu:'m', cina:'c', india:'i', lain:'ll' };
+
+  studentEvents.forEach(ev => {
+    const d = new Date(ev.tarikh + 'T00:00:00');
+    if (d.getFullYear() !== tahun) return;
+    const bulanKey = String(d.getMonth() + 1);
+    const kelas = yd.kelas.find(k => k.nama === ev.kelas);
+    if (!kelas) return;
+    if (!yd.bulanan[bulanKey]) yd.bulanan[bulanKey] = {};
+    if (!yd.bulanan[bulanKey][kelas.id]) yd.bulanan[bulanKey][kelas.id] = {};
+    const t = yd.bulanan[bulanKey][kelas.id];
+    const p = racePrefix[ev.race || 'lain'];
+    const s = ev.gender === 'L' ? 'l' : 'p';
+    const field = ev.jenis === 'masuk' ? `masuk_${p}${s}` : `keluar_${p}${s}`;
+    t[field] = (t[field] || 0) + 1;
+  });
+}
+
+function nextKelasId(arr) { return arr.length ? Math.max(...arr.map(k => k.id)) + 1 : 1; }
+
+/* ================= Toast ================= */
+function showToast(msg, isError) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (isError?' error':'');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = 'toast'; }, 2600);
+}
+
+/* ================= 响应式 ================= */
+window.addEventListener('resize', () => {
+  const wasMobile = isMobile;
+  isMobile = window.innerWidth < 768;
+  if (wasMobile !== isMobile) {
+    if (isMobile) {
+      document.getElementById('m_dateInput').value = document.getElementById('dt_dateInput').value;
+      renderHomeClasses();
+      renderAllViews();
+    } else {
+      document.getElementById('dt_dateInput').value = document.getElementById('m_dateInput').value;
+      renderAllViews();
+    }
+  }
+});
+
+/* ================= 启动 ================= */
+init();
+</script>
+</body>
+</html>
