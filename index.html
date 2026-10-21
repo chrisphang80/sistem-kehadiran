@@ -536,7 +536,6 @@ function init() {
   document.getElementById('m_dateInput').value  = todayStr;
   document.getElementById('newJoinDate').value  = todayStr;
 
-  // 迁移：为旧学生补 joinDate / race
   Object.keys(schoolData).forEach(cls => {
     schoolData[cls].forEach(s => {
       if (!s.joinDate) s.joinDate = SEMESTER_B_2026.sem1.mula;
@@ -1123,33 +1122,90 @@ function importAllStudentsCSV(event) {
   event.target.value = '';
 }
 
-/* ================= 月度同步 ================= */
+/* ================= 月度同步（关键修复：年初快照，不倍增） ================= */
 /**
- * 将每日点名 + 学生流动汇总到 UPDATE SORT CLASS 的 localStorage
- * 存储键: kehadiran_murid_v1
+ * 数据模型：
+ *   kelas.melayu_l / melayu_p / ...  = 年初（学期开始）在籍人数快照
+ *   bulanan[bulan][kelasId].masuk_*  = 该月新加入人数
+ *   bulanan[bulan][kelasId].keluar_* = 该月退学人数
  *
- * 关键修复：每次同步都用 schoolData 重算每个班级的初始 enrolmen
- * （kelas.melayu_l / melayu_p / cina_l / cina_p / india_l / india_p / lain_l / lain_p），
- * 这样 Data Asas 的 "Senarai Kelas & Enrolmen Awal" 会立即同步。
+ * 所以重算 kelas.* 时必须只用"年初在籍"的学生：
+ *   joinDate <= SEM_START 且 (无 leaveDate 或 leaveDate > SEM_START)
+ * 从 studentEvents 反推（不能用 schoolData 当前快照，否则会倍增）。
  */
+function buildStudentHistoryMap() {
+  const SEM_START = SEMESTER_B_2026.sem1.mula;
+  const map = {};
+  studentEvents.forEach(ev => {
+    const k = `${ev.kelas}_${ev.no}`;
+    if (ev.jenis === 'masuk') {
+      map[k] = {
+        kelas: ev.kelas, no: ev.no,
+        gender: ev.gender, race: (ev.race || 'lain').toLowerCase(),
+        joinDate: ev.tarikh, leaveDate: null
+      };
+    } else if (ev.jenis === 'keluar') {
+      if (map[k]) map[k].leaveDate = ev.tarikh;
+      else map[k] = {
+        kelas: ev.kelas, no: ev.no,
+        gender: ev.gender, race: (ev.race || 'lain').toLowerCase(),
+        joinDate: SEM_START, leaveDate: ev.tarikh
+      };
+    }
+  });
+  // 补充 schoolData 兜底（旧数据可能没有 event）
+  Object.keys(schoolData).forEach(clsName => {
+    schoolData[clsName].forEach(s => {
+      const k = `${clsName}_${s.no}`;
+      if (!map[k]) {
+        map[k] = {
+          kelas: clsName, no: s.no,
+          gender: s.gender, race: (s.race || 'lain').toLowerCase(),
+          joinDate: s.joinDate || SEM_START, leaveDate: null
+        };
+      }
+    });
+  });
+  return map;
+}
+
+function computeInitialEnrolmen(historyMap, clsName, semStart) {
+  const count = { melayu_l:0, melayu_p:0, cina_l:0, cina_p:0, india_l:0, india_p:0, lain_l:0, lain_p:0 };
+  Object.values(historyMap).forEach(st => {
+    if (st.kelas !== clsName) return;
+    const joinedBeforeStart = !st.joinDate || st.joinDate <= semStart;
+    const leftAfterStart = !st.leaveDate || st.leaveDate > semStart;
+    if (!joinedBeforeStart || !leftAfterStart) return;
+    const race = st.race || 'lain';
+    const p = race === 'melayu' ? 'melayu' : race === 'cina' ? 'cina' : race === 'india' ? 'india' : 'lain';
+    const g = st.gender === 'L' ? 'l' : 'p';
+    count[`${p}_${g}`]++;
+  });
+  return count;
+}
+
 function syncToMonthlySystem() {
   const STORAGE_KEY = 'kehadiran_murid_v1';
   let state;
-  try {
-    state = JSON.parse(localStorage.getItem(STORAGE_KEY));
-  } catch (e) { state = null; }
-  if (!state) {
-    console.warn('未找到月度系统数据，跳过同步（请先打开 UPDATE SORT CLASS 初始化）');
-    return;
-  }
+  try { state = JSON.parse(localStorage.getItem(STORAGE_KEY)); }
+  catch (e) { state = null; }
+  if (!state) { console.warn('未找到月度系统数据，跳过同步'); return; }
 
   const tahun = SEMESTER_B_2026.tahun;
+  const SEM_START = SEMESTER_B_2026.sem1.mula;
+
   if (!state.dataTahunan) state.dataTahunan = {};
   if (!state.dataTahunan[tahun]) state.dataTahunan[tahun] = { kelas: [], bulanan: {} };
   const yd = state.dataTahunan[tahun];
 
-  // 1. 确保班级存在 + 用 schoolData 重算初始 enrolmen（Data Asas 同步）
-  Object.keys(schoolData).forEach(clsName => {
+  // 1. 确保班级存在 + 用"年初快照"重算初始 enrolmen（修复倍增）
+  const historyMap = buildStudentHistoryMap();
+
+  // 所有曾出现的班级（schoolData + events）
+  const allClassNames = new Set(Object.keys(schoolData));
+  Object.values(historyMap).forEach(st => allClassNames.add(st.kelas));
+
+  allClassNames.forEach(clsName => {
     let kelas = yd.kelas.find(k => k.nama === clsName);
     if (!kelas) {
       kelas = {
@@ -1160,15 +1216,7 @@ function syncToMonthlySystem() {
       };
       yd.kelas.push(kelas);
     }
-    // === 关键修复：用 schoolData 重算初始 enrolmen ===
-    const count = { melayu_l:0, melayu_p:0, cina_l:0, cina_p:0, india_l:0, india_p:0, lain_l:0, lain_p:0 };
-    schoolData[clsName].forEach(s => {
-      const race = (s.race || 'lain').toLowerCase();
-      const p = race === 'melayu' ? 'melayu' : race === 'cina' ? 'cina' : race === 'india' ? 'india' : 'lain';
-      const g = s.gender === 'L' ? 'l' : 'p';
-      count[`${p}_${g}`]++;
-    });
-    Object.assign(kelas, count);
+    Object.assign(kelas, computeInitialEnrolmen(historyMap, clsName, SEM_START));
   });
 
   // 2. 聚合每日数据
@@ -1203,7 +1251,7 @@ function syncToMonthlySystem() {
     });
   });
 
-  // 3. 逐班计算 peratus & purata_hadir（两位小数）
+  // 3. 逐班计算 peratus & purata_hadir
   for (let bulan = 1; bulan <= 12; bulan++) {
     const bulanKey = String(bulan);
     const daysInMonth = schoolDaysInMonth(tahun, bulan);
@@ -1229,13 +1277,12 @@ function syncToMonthlySystem() {
     });
   }
 
-  // 4. 学生流动 → enrolmen 月度更新
+  // 4. 学生流动 → 月度 masuk/keluar
   updateEnrolmenFromEvents(yd, tahun);
 
-  // 5. 保存
   state.tahunAktif = tahun;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  console.log('✅ 已同步到月度系统（含初始 enrolmen 重算）');
+  console.log('✅ 已同步到月度系统（年初快照 + 月度流动）');
 }
 
 function updateEnrolmenFromEvents(yd, tahun) {
