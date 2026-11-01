@@ -278,7 +278,7 @@ button.student-card.absent .state{background:var(--danger);color:#fff}
 /* ---------- 总览 ---------- */
 .headline{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);background:#fff;border:1px solid var(--border);border-radius:var(--r-panel);margin-bottom:18px;overflow:hidden;box-shadow:var(--shadow-sm)}
 .hl-main{display:flex;flex-direction:column;gap:22px;padding:26px 30px 28px;min-width:0;background:linear-gradient(135deg,#fafbff 0%,#fff 100%)}
-.hl-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px 12px;flex-wrap:wrap}
+.hl-top{display:flex;justify-between:space-between;align-items:flex-start;gap:8px 12px;flex-wrap:wrap}
 .hl-greeting{font-size:17px;font-weight:800}
 .hl-sub{margin-top:3px;font-size:13px;color:var(--muted);font-weight:500}
 .hl-date{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);font-weight:500}
@@ -445,6 +445,7 @@ button.month-tile.kurang .pct{color:var(--danger)}
 <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
 <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
 <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></symbol>
 <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></symbol>
 <symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></symbol>
@@ -560,6 +561,7 @@ button.month-tile.kurang .pct{color:var(--danger)}
             <div class="actions">
               <button class="secondary small" onclick="batchSet(true)" data-i18n="allPresent">全部出席</button>
               <button class="secondary small" onclick="batchSet(false)" data-i18n="allAbsent">全部缺席</button>
+              <button class="danger small" onclick="promptResetAttendance()"><svg class="i" aria-hidden="true"><use href="#i-reset"/></svg><span data-i18n="resetAttendance">重置点名</span></button>
             </div>
           </div>
           <div class="student-grid" id="studentGrid"></div>
@@ -1064,6 +1066,21 @@ button.month-tile.kurang .pct{color:var(--danger)}
   </div>
 </div>
 
+<!-- 弹窗：通用确认对话框 -->
+<div id="confirmModal" class="modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal-content" style="max-width:440px;">
+    <div class="modal-header">
+      <h3 id="confirmModalTitle" data-i18n="confirmAction">确认操作</h3>
+      <button class="icon-btn" onclick="closeModal('confirmModal')" aria-label="Close"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <p id="confirmModalText" style="margin:16px 0;font-size:14px;color:var(--ink-2);line-height:1.6;"></p>
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeModal('confirmModal')" data-i18n="cancel">取消</button>
+      <button class="danger" id="confirmModalOkBtn"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="confirm">确认</span></button>
+    </div>
+  </div>
+</div>
+
 <!-- 弹窗：学年 -->
 <div id="yearModal" class="modal-overlay" role="dialog" aria-modal="true">
   <div class="modal-content">
@@ -1189,7 +1206,10 @@ const I18N = {
     navEnrolment: '在籍人数', navIntervensi: '干预跟进', navSettings: '设置',
     pointTitle: '点名', pointSub: 'Kehadiran Harian',
     pointDate: '点名日期', pointClass: '班级', pointMonthWeek: '月份 / 星期',
-    studentList: '学生名单', allPresent: '全部出席', allAbsent: '全部缺席',
+    studentList: '学生名单', allPresent: '全部出席', allAbsent: '全部缺席', resetAttendance: '重置点名',
+    confirmResetAttendance: '确认重置该班级今天的点名记录？这将会删除已保存的数据并恢复默认全勤状态。',
+    resetSuccess: '✅ 点名记录已重置',
+    confirmAction: '确认操作', confirm: '确认',
     present: '出席', absent: '缺席', total: '共', saveAttendance: '保存点名',
     noStudents: '此班级暂无学生。',
     logTitle: '学校日志', logSub: 'Jurnal Kehadiran Sekolah', print: '打印', date: '日期',
@@ -1263,7 +1283,7 @@ const I18N = {
     saved: '✅ 已保存', added: '✅ 已添加', updated: '✅ 已更新', deleted: '🗑️ 已删除',
     exported: '📥 已导出', pdfExported: '📄 PDF 已导出',
     saveFailed: '保存失败：', addFailed: '添加失败：', deleteFailed: '删除失败：', updateFailed: '更新失败：',
-    confirmDelete: '确认删除？', confirmDeleteMovement: '删除此流动记录？',
+    confirmDelete: '确认删除此记录？', confirmDeleteMovement: '删除此流动记录？',
     confirmDeleteClass: '删除此班级？（相关学生与记录将被删除）',
     confirmDeleteYear: '删除该学年全部数据？（班级、学生、出席、干预）',
     confirmRestore: '恢复备份？这将覆盖现有全部数据。',
@@ -1291,7 +1311,10 @@ const I18N = {
     navEnrolment: 'Enrolmen', navIntervensi: 'Intervensi', navSettings: 'Tetapan',
     pointTitle: 'Kehadiran', pointSub: 'Kehadiran Harian',
     pointDate: 'Tarikh Kehadiran', pointClass: 'Kelas', pointMonthWeek: 'Bulan / Hari',
-    studentList: 'Senarai Murid', allPresent: 'Semua Hadir', allAbsent: 'Semua Tidak Hadir',
+    studentList: 'Senarai Murid', allPresent: 'Semua Hadir', allAbsent: 'Semua Tidak Hadir', resetAttendance: 'Set Semula',
+    confirmResetAttendance: 'Adakah anda pasti untuk mendaftar semula/memadam rekod kehadiran kelas ini pada tarikh berkenaan? Data yang disimpan akan dipadam.',
+    resetSuccess: '✅ Rekod kehadiran telah diset semula',
+    confirmAction: 'Sahkan Tindakan', confirm: 'Sahkan',
     present: 'Hadir', absent: 'Tidak Hadir', total: 'Jumlah', saveAttendance: 'Simpan Kehadiran',
     noStudents: 'Tiada murid dalam kelas ini.',
     logTitle: 'Jurnal Sekolah', logSub: 'Jurnal Kehadiran Sekolah', print: 'Cetak', date: 'Tarikh',
@@ -1344,7 +1367,7 @@ const I18N = {
     searchName: 'Cari Nama', search: 'Cari...',
     name: 'Nama', gender: 'Jantina', race: 'Kaum', teacher: 'Guru',
     saveAssignment: 'Simpan Penetapan', exportJson: 'Export JSON', importJson: 'Import JSON',
-    backupNote: 'Backup包括 kelas, murid, rekod kehadiran, pergerakan murid, intervensi, tetapan sekolah. Import akan MENGGANTIKAN semua data sedia ada. Sila eksport backup semasa terlebih dahulu.',
+    backupNote: 'Backup termasuk kelas, murid, rekod kehadiran, pergerakan murid, intervensi, tetapan sekolah. Import akan MENGGANTIKAN semua data sedia ada. Sila eksport backup semasa terlebih dahulu.',
     addNewYear: 'Tambah Tahun Baharu', year: 'Tahun', bilMonth: 'Bil Bulan',
     copyClasses: 'Salin senarai kelas dari tahun aktif', create: 'Cipta',
     className: 'Nama Kelas', editClass: 'Edit Kelas',
@@ -1403,6 +1426,7 @@ let teachers = [];
 
 let dashboardData = null;
 let charts = {};
+let confirmModalCallback = null;
 
 const schoolSettings = JSON.parse(localStorage.getItem('schoolSettings') || '{"name":"","address":"","gb":"","gpk":"","gd":"","kpi":95,"bil_bulan":11}');
 
@@ -1421,6 +1445,12 @@ function t(key) {
   return (I18N[currentLang] && I18N[currentLang][key]) || I18N.zh[key] || key;
 }
 function monthName(m) { return (t('months')[m]) || ''; }
+
+function showConfirmModal(text, onConfirm) {
+  $('confirmModalText').textContent = text;
+  confirmModalCallback = onConfirm;
+  openModal('confirmModal');
+}
 
 function applyChartDefaults() {
   if (!window.Chart) return;
@@ -1595,6 +1625,14 @@ async function init() {
   $('rmtMonthSelect').value = new Date().getMonth() + 1;
   applyI18n();
 
+  $('confirmModalOkBtn').onclick = async () => {
+    closeModal('confirmModal');
+    if (confirmModalCallback) {
+      await confirmModalCallback();
+      confirmModalCallback = null;
+    }
+  };
+
   const savedLogo = schoolSettings.logo_url || localStorage.getItem('schoolLogo');
   if (savedLogo) {
     applyLogo(savedLogo);
@@ -1602,7 +1640,7 @@ async function init() {
   }
 
   if (!window.supabase) {
-    alert('Supabase JS 加载失败，请检查网络。');
+    toast('Supabase JS 加载失败，请检查网络。', true);
     return;
   }
   supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -1663,7 +1701,7 @@ async function enterApp(user) {
     .from('user_roles').select('role,email').eq('user_id', user.id).maybeSingle();
   if (error || !roleRow) {
     await supabaseClient.auth.signOut();
-    alert('无法读取角色，请联系管理员。');
+    toast('无法读取角色，请联系管理员。', true);
     return;
   }
   currentRole = roleRow.role;
@@ -1782,7 +1820,7 @@ async function loadTeachers() {
 }
 
 /* ============================================================
-   TAB 1: 点名
+   TAB 1: 点名 & 重置点名逻辑
    ============================================================ */
 function renderClassDropdowns() {
   const opts = classes.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
@@ -1873,6 +1911,46 @@ async function saveAttendance() {
   toast(`${t('saved')} ${date} (${students.length})`);
   dashboardData = null;
   await loadAttendanceForDate(date);
+}
+
+/* 点名重置功能 */
+function promptResetAttendance() {
+  if (!selectedClassId || !students.length) {
+    toast(t('noStudents'), true);
+    return;
+  }
+  showConfirmModal(
+    t('confirmResetAttendance'),
+    async () => {
+      await performResetAttendance();
+    }
+  );
+}
+
+async function performResetAttendance() {
+  const date = $('pointDate').value;
+  const studentIds = students.map(s => s.id);
+  if (!studentIds.length) return;
+
+  const { error } = await supabaseClient
+    .from('attendance_records')
+    .delete()
+    .in('student_id', studentIds)
+    .eq('attendance_date', date);
+
+  if (error) {
+    toast(t('deleteFailed') + error.message, true);
+    return;
+  }
+
+  // 恢复本地Map数据状态为默认全勤状态
+  attendance.clear();
+  students.forEach(s => attendance.set(s.id, true));
+
+  renderPointPanel();
+  dashboardData = null;
+  await loadAttendanceForDate(date);
+  toast(t('resetSuccess'));
 }
 
 /* ============================================================
@@ -2153,7 +2231,6 @@ async function renderDashboard() {
     grid.appendChild(div);
   }
 
-  // 独立捕获图表渲染异常，避免相互影响
   try { renderTrendChart(stats, year, kpi); } catch(e) { console.error('Trend chart error:', e); }
   try { renderEnrolTrendChart(year); } catch(e) { console.error('Enrol trend chart error:', e); }
   try { renderPieKaumChart(year); } catch(e) { console.error('Pie kaum chart error:', e); }
@@ -2755,13 +2832,14 @@ function editIntervensi(id) {
   $('intName').focus({ preventScroll: true });
 }
 
-async function deleteIntervensi(id) {
-  if (!confirm(t('confirmDelete'))) return;
-  const { error } = await supabaseClient.from('intervensi').delete().eq('id', id);
-  if (error) { toast(t('deleteFailed') + error.message, true); return; }
-  await loadIntervensi();
-  renderIntervensiList();
-  toast(t('deleted'));
+function deleteIntervensi(id) {
+  showConfirmModal(t('confirmDelete'), async () => {
+    const { error } = await supabaseClient.from('intervensi').delete().eq('id', id);
+    if (error) { toast(t('deleteFailed') + error.message, true); return; }
+    await loadIntervensi();
+    renderIntervensiList();
+    toast(t('deleted'));
+  });
 }
 
 function resetIntervensiForm() {
@@ -3014,23 +3092,24 @@ async function setActiveYear(year) {
   toast(t('saved'));
 }
 
-async function deleteYear(year) {
+function deleteYear(year) {
   if (allYears.length <= 1) return;
-  if (!confirm(t('confirmDeleteYear'))) return;
-  const { data: cls } = await supabaseClient.from('classes').select('id').eq('academic_year', year);
-  if (cls?.length) {
-    for (const c of cls) {
-      await supabaseClient.from('students').delete().eq('class_id', c.id);
-      await supabaseClient.from('intervensi').delete().eq('class_id', c.id);
-      await supabaseClient.from('class_assignments').delete().eq('class_id', c.id);
-      await supabaseClient.from('classes').delete().eq('id', c.id);
+  showConfirmModal(t('confirmDeleteYear'), async () => {
+    const { data: cls } = await supabaseClient.from('classes').select('id').eq('academic_year', year);
+    if (cls?.length) {
+      for (const c of cls) {
+        await supabaseClient.from('students').delete().eq('class_id', c.id);
+        await supabaseClient.from('intervensi').delete().eq('class_id', c.id);
+        await supabaseClient.from('class_assignments').delete().eq('class_id', c.id);
+        await supabaseClient.from('classes').delete().eq('id', c.id);
+      }
     }
-  }
-  await supabaseClient.from('academic_years').delete().eq('year', year);
-  await loadYears();
-  await loadClasses();
-  renderSettings();
-  toast(t('deleted'));
+    await supabaseClient.from('academic_years').delete().eq('year', year);
+    await loadYears();
+    await loadClasses();
+    renderSettings();
+    toast(t('deleted'));
+  });
 }
 
 function openClassModal() {
@@ -3069,17 +3148,18 @@ function editClass(id) {
   openModal('classModal');
 }
 
-async function deleteClass(id) {
-  if (!confirm(t('confirmDeleteClass'))) return;
-  await supabaseClient.from('students').delete().eq('class_id', id);
-  await supabaseClient.from('intervensi').delete().eq('class_id', id);
-  await supabaseClient.from('class_assignments').delete().eq('class_id', id);
-  const { error } = await supabaseClient.from('classes').delete().eq('id', id);
-  if (error) { toast(t('deleteFailed') + error.message, true); return; }
-  await loadClasses();
-  await loadAllStudents();
-  renderSettings();
-  toast(t('deleted'));
+function deleteClass(id) {
+  showConfirmModal(t('confirmDeleteClass'), async () => {
+    await supabaseClient.from('students').delete().eq('class_id', id);
+    await supabaseClient.from('intervensi').delete().eq('class_id', id);
+    await supabaseClient.from('class_assignments').delete().eq('class_id', id);
+    const { error } = await supabaseClient.from('classes').delete().eq('id', id);
+    if (error) { toast(t('deleteFailed') + error.message, true); return; }
+    await loadClasses();
+    await loadAllStudents();
+    renderSettings();
+    toast(t('deleted'));
+  });
 }
 
 function openAddStudentModal() {
@@ -3138,18 +3218,19 @@ async function updateStudent(id, patch) {
   toast(t('updated'));
 }
 
-async function deleteStudent(id) {
+function deleteStudent(id) {
   const s = allStudentsData.find(x => x.id === id);
   if (!s) return;
-  if (!confirm(`${t('confirmDelete')} ${s.name}?`)) return;
-  const { error } = await supabaseClient.from('students').delete().eq('id', id);
-  if (error) { toast(t('deleteFailed') + error.message, true); return; }
-  await loadAllStudents();
-  await loadAttendanceForDate($('pointDate').value);
-  students = allStudentsData.filter(s => s.class_id === selectedClassId).sort((a,b)=>a.student_no-b.student_no);
-  renderPointPanel();
-  renderStudentManage();
-  toast(t('deleted'));
+  showConfirmModal(`${t('confirmDelete')} (${s.name})`, async () => {
+    const { error } = await supabaseClient.from('students').delete().eq('id', id);
+    if (error) { toast(t('deleteFailed') + error.message, true); return; }
+    await loadAllStudents();
+    await loadAttendanceForDate($('pointDate').value);
+    students = allStudentsData.filter(s => s.class_id === selectedClassId).sort((a,b)=>a.student_no-b.student_no);
+    renderPointPanel();
+    renderStudentManage();
+    toast(t('deleted'));
+  });
 }
 
 function downloadStudentTemplate() {
@@ -3241,13 +3322,14 @@ async function saveMovement() {
   toast(t('saved'));
 }
 
-async function deleteMovement(id) {
-  if (!confirm(t('confirmDeleteMovement'))) return;
-  const { error } = await supabaseClient.from('student_movements').delete().eq('id', id);
-  if (error) { toast(t('deleteFailed') + error.message, true); return; }
-  await loadMovements();
-  renderEnrolment();
-  toast(t('deleted'));
+function deleteMovement(id) {
+  showConfirmModal(t('confirmDeleteMovement'), async () => {
+    const { error } = await supabaseClient.from('student_movements').delete().eq('id', id);
+    if (error) { toast(t('deleteFailed') + error.message, true); return; }
+    await loadMovements();
+    renderEnrolment();
+    toast(t('deleted'));
+  });
 }
 
 /* ============================================================
@@ -3293,43 +3375,44 @@ async function restoreData(event) {
   let data;
   try { data = JSON.parse(text); } catch (e) { toast(t('noData'), true); return; }
   if (!data.classes || !data.students) { toast(t('noData'), true); return; }
-  if (!confirm(t('confirmRestore'))) return;
 
-  await supabaseClient.from('attendance_records').delete().not('id', 'is', null);
-  await supabaseClient.from('student_movements').delete().not('id', 'is', null);
-  await supabaseClient.from('intervensi').delete().not('id', 'is', null);
-  await supabaseClient.from('class_assignments').delete().not('id', 'is', null);
-  await supabaseClient.from('students').delete().not('id', 'is', null);
-  await supabaseClient.from('classes').delete().not('id', 'is', null);
-  await supabaseClient.from('academic_years').delete().not('year', 'is', null);
+  showConfirmModal(t('confirmRestore'), async () => {
+    await supabaseClient.from('attendance_records').delete().not('id', 'is', null);
+    await supabaseClient.from('student_movements').delete().not('id', 'is', null);
+    await supabaseClient.from('intervensi').delete().not('id', 'is', null);
+    await supabaseClient.from('class_assignments').delete().not('id', 'is', null);
+    await supabaseClient.from('students').delete().not('id', 'is', null);
+    await supabaseClient.from('classes').delete().not('id', 'is', null);
+    await supabaseClient.from('academic_years').delete().not('year', 'is', null);
 
-  if (data.academic_years?.length) await supabaseClient.from('academic_years').insert(data.academic_years);
-  if (data.classes?.length) await supabaseClient.from('classes').insert(data.classes);
-  if (data.students?.length) await supabaseClient.from('students').insert(data.students);
-  if (data.attendance_records?.length) {
-    for (let i = 0; i < data.attendance_records.length; i += 1000) {
-      await supabaseClient.from('attendance_records').insert(data.attendance_records.slice(i, i+1000));
+    if (data.academic_years?.length) await supabaseClient.from('academic_years').insert(data.academic_years);
+    if (data.classes?.length) await supabaseClient.from('classes').insert(data.classes);
+    if (data.students?.length) await supabaseClient.from('students').insert(data.students);
+    if (data.attendance_records?.length) {
+      for (let i = 0; i < data.attendance_records.length; i += 1000) {
+        await supabaseClient.from('attendance_records').insert(data.attendance_records.slice(i, i+1000));
+      }
     }
-  }
-  if (data.student_movements?.length) await supabaseClient.from('student_movements').insert(data.student_movements);
-  if (data.intervensi?.length) await supabaseClient.from('intervensi').insert(data.intervensi);
-  if (data.class_assignments?.length) await supabaseClient.from('class_assignments').insert(data.class_assignments);
+    if (data.student_movements?.length) await supabaseClient.from('student_movements').insert(data.student_movements);
+    if (data.intervensi?.length) await supabaseClient.from('intervensi').insert(data.intervensi);
+    if (data.class_assignments?.length) await supabaseClient.from('class_assignments').insert(data.class_assignments);
 
-  if (data.school_settings) {
-    localStorage.setItem('schoolSettings', JSON.stringify(data.school_settings));
-    Object.assign(schoolSettings, data.school_settings);
-    if (data.school_settings.logo_url) {
-      localStorage.setItem('schoolLogo', data.school_settings.logo_url);
-      applyLogo(data.school_settings.logo_url);
+    if (data.school_settings) {
+      localStorage.setItem('schoolSettings', JSON.stringify(data.school_settings));
+      Object.assign(schoolSettings, data.school_settings);
+      if (data.school_settings.logo_url) {
+        localStorage.setItem('schoolLogo', data.school_settings.logo_url);
+        applyLogo(data.school_settings.logo_url);
+      }
     }
-  }
-  event.target.value = '';
-  await loadYears();
-  await loadClasses();
-  await loadAllStudents();
-  renderSettings();
-  renderPointPanel();
-  toast(t('saved'));
+    event.target.value = '';
+    await loadYears();
+    await loadClasses();
+    await loadAllStudents();
+    renderSettings();
+    renderPointPanel();
+    toast(t('saved'));
+  });
 }
 
 /* ============================================================
