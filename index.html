@@ -203,7 +203,7 @@ td.cell-bad{background:var(--danger-light);color:var(--danger);font-weight:600}
 .table-wrap th:first-child{background:#f1f5f9;z-index:2}
 .table-wrap tfoot td:first-child{background:var(--primary-light)}
 
-/* BORANG C9 特效与固定宽规 CSS - 防溢出防变形优化 */
+/* BORANG C9 特效与固定宽规 CSS */
 .tbl-c9-container{overflow-x:auto;background:#fff;border:1px solid #334155;border-radius:8px;padding:12px;margin-bottom:20px}
 table.tbl-c9{width:100%;border-collapse:collapse;font-size:9.5px;table-layout:fixed;color:#000;background:#fff}
 table.tbl-c9 th, table.tbl-c9 td{
@@ -248,6 +248,89 @@ table.tbl-c9 tr.summary-row td{
   background:#f8fafc!important;
   font-size:9px!important;
   line-height:1.1;
+}
+
+/* ============================================================
+   BORANG ANALISIS KEHADIRAN KELAS BULANAN (5M PDF STYLE)
+   ============================================================ */
+.tbl-apdm-container {
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 14px;
+  margin-top: 18px;
+  margin-bottom: 20px;
+  color: #000;
+}
+table.tbl-apdm {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8.5px;
+  table-layout: fixed;
+  color: #000;
+  background: #fff;
+}
+table.tbl-apdm th, table.tbl-apdm td {
+  border: 1px solid #000 !important;
+  padding: 2px 1px !important;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 8.5px !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  line-height: 1.15;
+}
+table.tbl-apdm th {
+  background: #f1f5f9 !important;
+  color: #000;
+  font-weight: 700;
+}
+table.tbl-apdm td.apdm-name-col {
+  text-align: left !important;
+  padding-left: 4px !important;
+  line-height: 1.1;
+}
+table.tbl-apdm .col-day-apdm {
+  width: 17px !important;
+  min-width: 17px !important;
+  max-width: 17px !important;
+  font-size: 8px !important;
+}
+table.tbl-apdm .col-bil-apdm { width: 22px !important; }
+table.tbl-apdm .col-stat-apdm { width: 34px !important; font-size: 8px !important; }
+table.tbl-apdm tr.summary-row-apdm td {
+  font-weight: 700;
+  background: #fafafa !important;
+  font-size: 8px !important;
+}
+
+/* 5M 底部统计与签核框 */
+.apdm-footer-block {
+  margin-top: 10px;
+  border: 1px solid #000;
+  padding: 8px;
+  font-size: 8.5px;
+  background: #fff;
+  color: #000;
+  line-height: 1.4;
+}
+.apdm-footer-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 1.6fr;
+  gap: 12px;
+}
+.apdm-meta-item {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dotted #ccc;
+  padding: 1px 0;
+}
+.apdm-petunjuk {
+  margin-top: 6px;
+  font-size: 7.5px;
+  border-top: 1px dashed #666;
+  padding-top: 4px;
 }
 
 /* ---------- 点名 ---------- */
@@ -426,6 +509,40 @@ button.month-tile.kurang .pct{color:var(--danger)}
   .rollbar button{margin-left:auto}
 }
 
+
+/* ---------- 学生管理优化 ---------- */
+.student-admin-toolbar{display:grid;grid-template-columns:minmax(180px,1.5fr) auto;gap:10px;align-items:center}
+.student-admin-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.student-admin-actions button{width:100%;white-space:normal;min-height:42px}
+.student-add-row{display:grid;grid-template-columns:minmax(0,1fr) 76px auto auto;gap:10px;align-items:center}
+.student-add-row input,.student-add-row select{min-width:0}
+.student-admin-list{max-height:520px;overflow:auto;border:1px solid var(--border);border-radius:12px}
+.student-admin-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border);background:#fff}
+.student-admin-item:last-child{border-bottom:0}
+.student-admin-item:hover{background:#f8fafc}
+.student-admin-name{font-size:13px;font-weight:600;overflow-wrap:anywhere}
+.student-admin-meta{font-size:11px;color:var(--muted);margin-top:3px}
+.student-admin-tools{display:flex;align-items:center;gap:3px;flex-wrap:wrap;justify-content:flex-end}
+.student-admin-tools button{min-height:30px;padding:0 8px;font-size:11px;background:transparent;color:var(--primary);border:0;box-shadow:none}
+.student-admin-tools button.del{color:var(--danger)}
+.student-admin-tools button:hover{background:var(--primary-light);transform:none;box-shadow:none}
+.student-admin-tools .status-badge{font-size:10px;padding:2px 6px}
+.class-teacher-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.class-teacher-item{padding:12px;border:1px solid var(--border);border-radius:12px;background:#fff}
+.class-teacher-item label{display:block;font-size:12px;font-weight:700;margin-bottom:7px;color:var(--ink-2)}
+.student-admin-count{font-size:12px;color:var(--muted);white-space:nowrap}
+@media(max-width:640px){
+ .student-admin-toolbar{grid-template-columns:1fr}
+ .student-admin-actions{grid-template-columns:1fr 1fr}
+ .student-add-row{grid-template-columns:minmax(0,1fr) 72px}
+ .student-add-row .rmt-check{grid-column:1}
+ .student-add-row button{grid-column:2;grid-row:1 / span 2;height:100%}
+ .student-admin-item{grid-template-columns:1fr;gap:6px}
+ .student-admin-tools{justify-content:flex-start}
+ .student-admin-list{max-height:60vh}
+ .modal-content{padding:18px;max-height:94vh}
+}
+
 /* ---------- 打印 ---------- */
 @media print{
   @page { size: landscape; margin: 8mm; }
@@ -435,8 +552,9 @@ button.month-tile.kurang .pct{color:var(--danger)}
   .content{padding:0}
   .tab-panel{display:none!important}
   .tab-panel.active{display:block!important;animation:none}
-  .tbl-c9-container{border:none!important;padding:0!important;margin:0!important}
-  table.tbl-c9 th, table.tbl-c9 td{border:1px solid #000!important;color:#000!important}
+  .tbl-c9-container, .tbl-apdm-container{border:none!important;padding:0!important;margin:0!important}
+  table.tbl-c9 th, table.tbl-c9 td, table.tbl-apdm th, table.tbl-apdm td{border:1px solid #000!important;color:#000!important}
+  .apdm-footer-block { border: 1px solid #000 !important; }
 }
 </style>
 </head>
@@ -561,7 +679,8 @@ button.month-tile.kurang .pct{color:var(--danger)}
             <div class="actions">
               <button class="secondary small" onclick="batchSet(true)" data-i18n="allPresent">全部出席</button>
               <button class="secondary small" onclick="batchSet(false)" data-i18n="allAbsent">全部缺席</button>
-              <button class="danger small" onclick="promptResetAttendance()"><svg class="i" aria-hidden="true"><use href="#i-reset"/></svg><span data-i18n="resetAttendance">重置点名</span></button>
+              <button class="danger small" onclick="promptResetAttendance()"><svg class="i" aria-hidden="true"><use href="#i-reset"/></svg><span data-i18n="resetAttendance">重置本班</span></button>
+              <button class="danger small" onclick="promptResetAllAttendanceToday()"><svg class="i" aria-hidden="true"><use href="#i-reset"/></svg><span data-i18n="resetAllAttendance">重置全校今日</span></button>
             </div>
           </div>
           <div class="student-grid" id="studentGrid"></div>
@@ -690,14 +809,14 @@ button.month-tile.kurang .pct{color:var(--danger)}
         </div>
       </section>
 
-      <!-- ============ 月度分析 ============ -->
+      <!-- ============ 月度分析 (已删除名字下方的编号) ============ -->
       <section class="tab-panel" id="tab-analysis-month">
         <div class="page-head">
           <div><h2 data-i18n="monthTitle">月度分析</h2><p data-i18n="monthSub">Analisis Bulanan</p></div>
           <div class="page-actions">
             <button class="secondary" onclick="exportExcelAnMonth()"><svg class="i" aria-hidden="true"><use href="#i-table"/></svg>Excel</button>
             <button class="secondary" onclick="exportPDFAnMonth()"><svg class="i" aria-hidden="true"><use href="#i-file"/></svg>PDF</button>
-            <button class="secondary" onclick="window.print()"><svg class="i" aria-hidden="true"><use href="#i-printer"/></svg><span data-i18n="print">打印</span></button>
+            <button class="secondary" onclick="window.print()"><svg class="i" aria-hidden="true"><use href="#i-printer"/></svg><span data-i18n="print">打印报告</span></button>
           </div>
         </div>
         <div class="toolbar">
@@ -706,10 +825,18 @@ button.month-tile.kurang .pct{color:var(--danger)}
             <select id="anMonthSelect" onchange="renderAnalysisMonth()"></select>
           </div>
           <div class="form-group">
-            <label for="anMonthAliran" data-i18n="stream">分流</label>
+            <label for="anMonthClass" data-i18n="class">班级打印报告 (5M 格式)</label>
+            <select id="anMonthClass" onchange="renderAnalysisMonth()"></select>
+          </div>
+          <div class="form-group">
+            <label for="anMonthAliran" data-i18n="stream">分流对比</label>
             <select id="anMonthAliran" onchange="renderAnalysisMonth()"></select>
           </div>
         </div>
+
+        <!-- 单班月度详细打印报告容器 (5M 样板) -->
+        <div id="anMonthClassReportContainer" class="tbl-apdm-container hidden"></div>
+
         <div class="kpi-grid" id="anMonthKpi"></div>
         <div id="anMonthInfo" class="muted info-line"></div>
         <div class="chart-panel">
@@ -985,6 +1112,8 @@ button.month-tile.kurang .pct{color:var(--danger)}
                 </div>
               </div>
               <div id="teacherAssignmentList" class="check-grid"></div>
+              <h4 data-i18n="classTeacherTitle" style="margin-top:18px">班主任指定</h4>
+              <div id="classTeacherGrid" class="class-teacher-grid"></div>
               <div class="actions">
                 <button onclick="saveTeacherAssignments()"><svg class="i" aria-hidden="true"><use href="#i-save"/></svg><span data-i18n="saveAssignment">保存分配</span></button>
               </div>
@@ -997,28 +1126,28 @@ button.month-tile.kurang .pct{color:var(--danger)}
               <div class="card-head">
                 <h3 class="card-title"><span data-i18n="studentManagement">学生管理</span><span class="tag">Admin</span></h3>
                 <div class="actions">
-                  <button class="secondary small" onclick="document.getElementById('csvImport').click()"><svg class="i" aria-hidden="true"><use href="#i-upload"/></svg><span data-i18n="importCsv">导入 CSV</span></button>
-                  <button class="secondary small" onclick="downloadStudentTemplate()"><svg class="i" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="csvTemplate">CSV 模板</span></button>
-                  <button class="small" onclick="openAddStudentModal()"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg><span data-i18n="addStudent">添加学生</span></button>
-                </div>
-                <input type="file" id="csvImport" accept=".csv" style="display:none" onchange="importStudentsCSV(event)">
-              </div>
-              <div class="form-grid">
-                <div class="form-group">
-                  <label for="manageStudentClass" data-i18n="class">班级</label>
-                  <select id="manageStudentClass" onchange="renderStudentManage()"></select>
-                </div>
-                <div class="form-group">
-                  <label for="manageStudentSearch" data-i18n="searchName">搜索姓名</label>
-                  <input id="manageStudentSearch" type="search" oninput="renderStudentManage()">
+                  <button class="secondary small" onclick="document.getElementById('csvImport').click()"><svg class="i"><use href="#i-upload"/></svg><span data-i18n="importCsv">导入 CSV</span></button>
+                  <button class="secondary small" onclick="downloadStudentTemplate()"><svg class="i"><use href="#i-download"/></svg><span data-i18n="csvTemplate">CSV 模板</span></button>
+                  <input type="file" id="csvImport" accept=".csv" style="display:none" onchange="importStudentsCSV(event)">
                 </div>
               </div>
-              <div class="table-wrap">
-                <table id="tblStudentManage">
-                  <thead><tr><th>#</th><th data-i18n="name">姓名</th><th data-i18n="gender">性别</th><th data-i18n="race">种族</th><th>RMT</th><th data-i18n="status">状态</th><th data-i18n="actions">操作</th></tr></thead>
-                  <tbody></tbody>
-                </table>
+              <div class="student-admin-toolbar">
+                <div class="form-group"><label for="manageStudentClass" data-i18n="class">班级</label><select id="manageStudentClass" onchange="renderStudentManage()"></select></div>
+                <button class="secondary" onclick="renumberStudents()" data-i18n="refresh">重排</button>
               </div>
+              <div class="student-admin-actions">
+                <button style="background:#f59e0b" onclick="promoteClassStudents()">🎓 <span data-i18n="promoteClass">升级班级 (Naik Kelas)</span></button>
+                <button style="background:#475569" onclick="graduateClassStudents()">🎉 <span data-i18n="graduateClass">毕业 (Tamat Transisi)</span></button>
+              </div>
+              <div class="student-add-row">
+                <input id="quickStudentName" data-i18n-placeholder="studentNamePlaceholder" placeholder="学生姓名" aria-label="学生姓名">
+                <select id="quickStudentGender" aria-label="Gender"><option value="L">L</option><option value="P">P</option></select>
+                <label class="check-line rmt-check"><input type="checkbox" id="quickStudentRMT"> <span>🍱 RMT</span></label>
+                <button onclick="quickAddStudent()" data-i18n="add">添加</button>
+              </div>
+              <label class="check-line"><input type="checkbox" id="showInactiveStudents" onchange="renderStudentManage()"> <span data-i18n="showInactive">显示已毕业/非活跃学生</span></label>
+              <input id="manageStudentSearch" type="search" oninput="renderStudentManage()" data-i18n-placeholder="searchName" placeholder="搜索姓名">
+              <div class="student-admin-list" id="studentAdminList"></div>
             </div>
           </div>
 
@@ -1053,6 +1182,7 @@ button.month-tile.kurang .pct{color:var(--danger)}
               <div class="actions">
                 <button class="secondary" onclick="backupData()"><svg class="i" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="exportJson">导出 JSON</span></button>
                 <button class="danger" onclick="document.getElementById('restoreInput').click()"><svg class="i" aria-hidden="true"><use href="#i-upload"/></svg><span data-i18n="importJson">导入 JSON</span></button>
+                <button class="danger" onclick="promptResetAllHistoryAttendance()"><svg class="i" aria-hidden="true"><use href="#i-reset"/></svg><span data-i18n="resetAllHistoryAttendance">重置全部出席记录</span></button>
                 <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
               </div>
               <small class="note" data-i18n="backupNote">备份包含：班级、学生、出席记录、学生流动、干预记录、学校设置。导入会用备份内容覆盖现有全部数据，请先导出一份当前备份。</small>
@@ -1132,9 +1262,10 @@ button.month-tile.kurang .pct{color:var(--danger)}
 <div id="studentModal" class="modal-overlay" role="dialog" aria-modal="true">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 data-i18n="addStudentTitle">添加学生</h3>
+      <h3 id="studentModalTitle" data-i18n="addStudentTitle">添加学生</h3>
       <button class="icon-btn" onclick="closeModal('studentModal')" aria-label="Close"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
+    <input type="hidden" id="studentModalEditId" value="">
     <div class="form-grid">
       <div class="form-group span-all"><label for="studentModalName" data-i18n="name">姓名</label><input id="studentModalName"></div>
       <div class="form-group"><label for="studentModalGender" data-i18n="gender">性别</label><select id="studentModalGender"><option value="L" data-i18n="male">男 (L)</option><option value="P" data-i18n="female">女 (P)</option></select></div>
@@ -1206,9 +1337,13 @@ const I18N = {
     navEnrolment: '在籍人数', navIntervensi: '干预跟进', navSettings: '设置',
     pointTitle: '点名', pointSub: 'Kehadiran Harian',
     pointDate: '点名日期', pointClass: '班级', pointMonthWeek: '月份 / 星期',
-    studentList: '学生名单', allPresent: '全部出席', allAbsent: '全部缺席', resetAttendance: '重置点名',
+    studentList: '学生名单', allPresent: '全部出席', allAbsent: '全部缺席', resetAttendance: '重置本班', resetAllAttendance: '重置全校今日',
+    resetAllHistoryAttendance: '重置全部出席记录',
     confirmResetAttendance: '确认重置该班级今天的点名记录？这将会删除已保存的数据并恢复默认全勤状态。',
+    confirmResetAllAttendance: '确认重置全校所有班级今天的点名记录？这将会删除今天所有已保存的出席数据。',
+    confirmResetAllHistoryAttendance: '⚠️ 警告：确认清空系统中的所有出席历史记录？此操作不可逆！',
     resetSuccess: '✅ 点名记录已重置',
+    resetAllSuccess: '✅ 出席记录已全部重置',
     confirmAction: '确认操作', confirm: '确认',
     present: '出席', absent: '缺席', total: '共', saveAttendance: '保存点名',
     noStudents: '此班级暂无学生。',
@@ -1230,7 +1365,7 @@ const I18N = {
     below: '低于', exceeds: '高于',
     monthTitle: '月度分析', monthSub: 'Analisis Bulanan',
     month: '月份', stream: '分流', allStreams: '所有分流',
-    classCompare: '班级对比', selectMonth: '请选择月份', pickMonth: '— 选择月份 —',
+    classCompare: '班级对比', selectMonth: '请选择月份', pickMonth: '— 选择月份 —', selectClass: '— 选择班级 —',
     noData: '无数据', achieved: '达标', belowKpiShort: '未达标',
     classTitle: '班级分析', classSub: 'Analisis Kelas', class: '班级',
     yearlyAvg: '年度平均', monthsFilled: '已填月份', monthsAchieved: '达标月份',
@@ -1295,6 +1430,12 @@ const I18N = {
     logClass: '班级', logEnrol: '在籍', logPresent: '出席', logAbsent: '缺席',
     logRemark: '备注', logRate: '出席率', logTotal: '合计',
     greetingMorning: '早上好', greetingNoon: '中午好', greetingEvening: '下午好', greetingNight: '晚上好',
+    classTeacherTitle: '班主任指定', selectClassTeacher: '选择班主任', noClassTeacher: '未指定班主任',
+    refresh: '重排', promoteClass: '升级班级 (Naik Kelas)', graduateClass: '毕业 (Tamat Transisi)',
+    studentNamePlaceholder: '学生姓名', showInactive: '显示已毕业/非活跃学生', add: '添加',
+    edit: '编辑', transfer: '调班', deleteAction: '删除', activeStudent: '普通', inactiveStudent: '已毕业/非活跃',
+    promoteConfirm: '确定将本班所有活跃学生升级到', graduateConfirm: '确定将本班所有活跃学生设为毕业/非活跃？',
+    noNextClass: '找不到下一班级，请先建立班级。', studentAdded: '学生已添加', studentUpdated: '学生资料已更新',
     roleAdmin: '管理员', roleTeacher: '教师'
   },
   ms: {
@@ -1311,9 +1452,13 @@ const I18N = {
     navEnrolment: 'Enrolmen', navIntervensi: 'Intervensi', navSettings: 'Tetapan',
     pointTitle: 'Kehadiran', pointSub: 'Kehadiran Harian',
     pointDate: 'Tarikh Kehadiran', pointClass: 'Kelas', pointMonthWeek: 'Bulan / Hari',
-    studentList: 'Senarai Murid', allPresent: 'Semua Hadir', allAbsent: 'Semua Tidak Hadir', resetAttendance: 'Set Semula',
+    studentList: 'Senarai Murid', allPresent: 'Semua Hadir', allAbsent: 'Semua Tidak Hadir', resetAttendance: 'Set Semula Kelas Ini', resetAllAttendance: 'Set Semula Semua (Hari Ini)',
+    resetAllHistoryAttendance: 'Kosongkan Semua Rekod Kehadiran',
     confirmResetAttendance: 'Adakah anda pasti untuk mendaftar semula/memadam rekod kehadiran kelas ini pada tarikh berkenaan? Data yang disimpan akan dipadam.',
+    confirmResetAllAttendance: 'Adakah anda pasti untuk set semula rekod kehadiran SEMUA kelas untuk hari ini?',
+    confirmResetAllHistoryAttendance: '⚠️ AMARAN: Adakah anda pasti untuk memadam SEMUA rekod kehadiran dalam sistem? Tindakan ini tidak boleh dibatalkan!',
     resetSuccess: '✅ Rekod kehadiran telah diset semula',
+    resetAllSuccess: '✅ Semua rekod kehadiran telah diset semula',
     confirmAction: 'Sahkan Tindakan', confirm: 'Sahkan',
     present: 'Hadir', absent: 'Tidak Hadir', total: 'Jumlah', saveAttendance: 'Simpan Kehadiran',
     noStudents: 'Tiada murid dalam kelas ini.',
@@ -1335,7 +1480,7 @@ const I18N = {
     below: 'di bawah', exceeds: 'melebihi',
     monthTitle: 'Analisis Bulanan', monthSub: 'Analisis Bulanan',
     month: 'Bulan', stream: 'Aliran', allStreams: 'Semua Aliran',
-    classCompare: 'Perbandingan Kelas', selectMonth: 'Sila pilih bulan', pickMonth: '— Pilih Bulan —',
+    classCompare: 'Perbandingan Kelas', selectMonth: 'Sila pilih bulan', pickMonth: '— Pilih Bulan —', selectClass: '— Pilih Kelas —',
     noData: 'Tiada data', achieved: 'Capai', belowKpiShort: 'Bawah KPI',
     classTitle: 'Analisis Kelas', classSub: 'Analisis Kelas', class: 'Kelas',
     yearlyAvg: 'Purata Tahunan', monthsFilled: 'Bulan Diisi', monthsAchieved: 'Bulan Capai KPI',
@@ -1400,6 +1545,12 @@ const I18N = {
     logClass: 'Kelas', logEnrol: 'Enrolmen', logPresent: 'Hadir', logAbsent: 'Tidak Hadir',
     logRemark: 'Catatan', logRate: 'Peratus', logTotal: 'Jumlah',
     greetingMorning: 'Selamat Pagi', greetingNoon: 'Selamat Tengah Hari', greetingEvening: 'Selamat Petang', greetingNight: 'Selamat Malam',
+    classTeacherTitle: 'Penetapan Guru Kelas', selectClassTeacher: 'Pilih Guru Kelas', noClassTeacher: 'Belum ditetapkan',
+    refresh: 'Susun Semula', promoteClass: 'Naik Kelas', graduateClass: 'Tamat Transisi',
+    studentNamePlaceholder: 'Nama murid', showInactive: 'Papar murid tamat / tidak aktif', add: 'Tambah',
+    edit: 'Edit', transfer: 'Tukar Kelas', deleteAction: 'Padam', activeStudent: 'Biasa', inactiveStudent: 'Tamat / Tidak Aktif',
+    promoteConfirm: 'Naikkan semua murid aktif kelas ini ke', graduateConfirm: 'Tetapkan semua murid aktif kelas ini sebagai tamat/tidak aktif?',
+    noNextClass: 'Kelas seterusnya tidak dijumpai. Sila wujudkan kelas dahulu.', studentAdded: 'Murid berjaya ditambah', studentUpdated: 'Maklumat murid dikemaskini',
     roleAdmin: 'Admin', roleTeacher: 'Guru'
   }
 };
@@ -1420,6 +1571,7 @@ let students = [];
 let attendance = new Map();
 let allAttendanceData = [];
 let allStudentsData = [];
+let allStudentRecords = [];
 let movements = [];
 let intervensi = [];
 let teachers = [];
@@ -1537,6 +1689,10 @@ function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     el.textContent = t(el.dataset.i18n);
   });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const value = t(el.dataset.i18nPlaceholder);
+    if (value) el.placeholder = value;
+  });
   document.querySelectorAll('[data-race-opt]').forEach(el => {
     el.textContent = t('raceLabels')[el.dataset.raceOpt] || el.textContent;
   });
@@ -1562,6 +1718,15 @@ function applyI18n() {
       opts.map(v => `<option>${esc(v)}</option>`).join('');
     el.value = cur;
   });
+
+  // 月度分析：班级下拉菜单的占位文字随语言切换，并保留当前选择
+  const monthClassSelect = $('anMonthClass');
+  if (monthClassSelect) {
+    const selectedMonthClass = monthClassSelect.value;
+    const classOptions = classes.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+    monthClassSelect.innerHTML = `<option value="">${t('selectClass')}</option>` + classOptions;
+    monthClassSelect.value = selectedMonthClass;
+  }
 
   const intType = $('intType');
   if (intType) {
@@ -1612,6 +1777,7 @@ function changeLanguage() {
   currentLang = $('langSelect').value;
   localStorage.setItem('appLang', currentLang);
   applyI18n();
+  if (currentRole === 'admin') renderSettings();
   toast(currentLang === 'zh' ? '已切换为中文' : 'Bahasa ditukar ke Melayu');
 }
 
@@ -1781,9 +1947,9 @@ async function loadSettings() {
 async function loadAllStudents() {
   const { data } = await supabaseClient
     .from('students')
-    .select('id,class_id,student_no,name,gender,race,active,is_rmt')
-    .eq('active', true);
-  allStudentsData = data || [];
+    .select('id,class_id,student_no,name,gender,race,active,is_rmt');
+  allStudentRecords = data || [];
+  allStudentsData = allStudentRecords.filter(s => s.active !== false);
   students = allStudentsData.filter(s => s.class_id === selectedClassId).sort((a,b)=>a.student_no-b.student_no);
 }
 
@@ -1828,6 +1994,11 @@ function renderClassDropdowns() {
   $('manageStudentClass').innerHTML = opts;
   $('studentModalClass').innerHTML = opts;
   $('intClass').innerHTML = opts;
+  if ($('anMonthClass')) {
+    const currentMonthClass = $('anMonthClass').value;
+    $('anMonthClass').innerHTML = `<option value="">${t('selectClass')}</option>` + opts;
+    $('anMonthClass').value = currentMonthClass;
+  }
   $('intFilterClass').innerHTML = `<option value="">${t('allClasses')}</option>` + opts;
   $('anClassSelect').innerHTML = opts;
   const aliranList = [...new Set(classes.map(c => c.aliran).filter(Boolean))].sort();
@@ -1913,7 +2084,7 @@ async function saveAttendance() {
   await loadAttendanceForDate(date);
 }
 
-/* 点名重置功能 */
+/* 点名重置本班功能 */
 function promptResetAttendance() {
   if (!selectedClassId || !students.length) {
     toast(t('noStudents'), true);
@@ -1943,7 +2114,6 @@ async function performResetAttendance() {
     return;
   }
 
-  // 恢复本地Map数据状态为默认全勤状态
   attendance.clear();
   students.forEach(s => attendance.set(s.id, true));
 
@@ -1951,6 +2121,67 @@ async function performResetAttendance() {
   dashboardData = null;
   await loadAttendanceForDate(date);
   toast(t('resetSuccess'));
+}
+
+/* 重置全校今日点名功能 */
+function promptResetAllAttendanceToday() {
+  const date = $('pointDate').value;
+  showConfirmModal(
+    t('confirmResetAllAttendance'),
+    async () => {
+      await performResetAllAttendanceToday(date);
+    }
+  );
+}
+
+async function performResetAllAttendanceToday(date) {
+  const { error } = await supabaseClient
+    .from('attendance_records')
+    .delete()
+    .eq('attendance_date', date);
+
+  if (error) {
+    toast(t('deleteFailed') + error.message, true);
+    return;
+  }
+
+  attendance.clear();
+  students.forEach(s => attendance.set(s.id, true));
+
+  renderPointPanel();
+  dashboardData = null;
+  await loadAttendanceForDate(date);
+  toast(t('resetAllSuccess'));
+}
+
+/* 重置/清空系统全部历史出席记录功能 */
+function promptResetAllHistoryAttendance() {
+  showConfirmModal(
+    t('confirmResetAllHistoryAttendance'),
+    async () => {
+      await performResetAllHistoryAttendance();
+    }
+  );
+}
+
+async function performResetAllHistoryAttendance() {
+  const { error } = await supabaseClient
+    .from('attendance_records')
+    .delete()
+    .not('id', 'is', null);
+
+  if (error) {
+    toast(t('deleteFailed') + error.message, true);
+    return;
+  }
+
+  attendance.clear();
+  allAttendanceData = [];
+  students.forEach(s => attendance.set(s.id, true));
+
+  renderPointPanel();
+  dashboardData = null;
+  toast(t('resetAllSuccess'));
 }
 
 /* ============================================================
@@ -2370,17 +2601,29 @@ function renderTopKelas(stats, year, kpi) {
 }
 
 /* ============================================================
-   TAB 4: 月度分析
+   TAB 4: 月度分析 & APDM 5M 打印报告生成逻辑
    ============================================================ */
 async function renderAnalysisMonth() {
   const month = parseInt($('anMonthSelect').value);
   const aliran = $('anMonthAliran').value;
+  const targetClassId = $('anMonthClass') ? $('anMonthClass').value : '';
+
   if (!month) {
     $('anMonthInfo').textContent = t('selectMonth');
     $('tblAnMonth').querySelector('tbody').innerHTML = `<tr><td colspan="10" class="muted" style="padding:20px">${t('selectMonth')}</td></tr>`;
     $('anMonthKpi').innerHTML = '';
+    $('anMonthClassReportContainer').classList.add('hidden');
     return;
   }
+
+  // 若在下拉菜单中选择了特定班级，渲染 APDM 5M 格式的班级打印报告
+  if (targetClassId) {
+    await renderMonthlyClassReport(targetClassId, month);
+    $('anMonthClassReportContainer').classList.remove('hidden');
+  } else {
+    $('anMonthClassReportContainer').classList.add('hidden');
+  }
+
   const year = activeYear.year;
   const kpi = schoolSettings.kpi || 95;
   const stats = dashboardData || await fetchMonthlyStats(year);
@@ -2437,6 +2680,241 @@ async function renderAnalysisMonth() {
     ]},
     options: { responsive:true, maintainAspectRatio:false, scales:{ y: pctAxis(rows.map(r => r.rate), kpi, true) }, plugins:{ legend:{ position:'bottom' } } }
   });
+}
+
+/* 核心生成 5M APDM 样板月度班级出席报告（已删除学生姓名下方的编号） */
+async function renderMonthlyClassReport(classId, month) {
+  const year = activeYear?.year || new Date().getFullYear();
+  const targetClass = classes.find(c => String(c.id) === String(classId));
+  if (!targetClass) return;
+
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const startDate = `${year}-${String(month).padStart(2,'0')}-01`;
+  const endDate = `${year}-${String(month).padStart(2,'0')}-${String(daysInMonth).padStart(2,'0')}`;
+
+  const classStudents = allStudentsData
+    .filter(s => s.class_id === classId)
+    .sort((a,b) => a.student_no - b.student_no);
+
+  const studentIds = classStudents.map(s => s.id);
+  let currentMonthAttMap = new Map();
+  let prevMonthsHadirMap = new Map();
+
+  if (studentIds.length) {
+    // 1. 查询本月出席
+    const { data: curData } = await supabaseClient
+      .from('attendance_records')
+      .select('student_id, attendance_date, present')
+      .in('student_id', studentIds)
+      .gte('attendance_date', startDate)
+      .lte('attendance_date', endDate);
+
+    (curData || []).forEach(r => {
+      const day = parseInt(r.attendance_date.slice(8, 10));
+      currentMonthAttMap.set(r.student_id + '_' + day, r.present);
+    });
+
+    // 2. 查询过往月份累计出席
+    const { data: prevData } = await supabaseClient
+      .from('attendance_records')
+      .select('student_id, present')
+      .in('student_id', studentIds)
+      .gte('attendance_date', `${year}-01-01`)
+      .lt('attendance_date', startDate);
+
+    (prevData || []).forEach(r => {
+      if (r.present) {
+        prevMonthsHadirMap.set(r.student_id, (prevMonthsHadirMap.get(r.student_id) || 0) + 1);
+      }
+    });
+  }
+
+  // 统计每个日期全班出席/缺席情况
+  const dayPresentCount = Array(32).fill(0);
+  const dayAbsentCount = Array(32).fill(0);
+  const dayTotalCount = Array(32).fill(0);
+  let schoolDaysThisMonth = 0;
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    let hasRecordOnDay = false;
+    classStudents.forEach(s => {
+      const key = s.id + '_' + d;
+      if (currentMonthAttMap.has(key)) {
+        hasRecordOnDay = true;
+        if (currentMonthAttMap.get(key)) {
+          dayPresentCount[d]++;
+        } else {
+          dayAbsentCount[d]++;
+        }
+        dayTotalCount[d]++;
+      }
+    });
+    if (hasRecordOnDay) schoolDaysThisMonth++;
+  }
+
+  // 渲染学生行
+  let bodyRowsHtml = '';
+  let grandTotalHadirThisMonth = 0;
+  let grandTotalTidakHadirThisMonth = 0;
+  let grandTotalSepatutnyaThisMonth = 0;
+
+  classStudents.forEach((s, idx) => {
+    let monthHadir = 0;
+    let monthTidakHadir = 0;
+    let dayTds = '';
+
+    for (let d = 1; d <= 30; d++) {
+      if (d > daysInMonth) {
+        dayTds += `<td class="col-day-apdm"></td>`;
+        continue;
+      }
+      const key = s.id + '_' + d;
+      let cellTxt = '';
+      if (currentMonthAttMap.has(key)) {
+        const isPresent = currentMonthAttMap.get(key);
+        cellTxt = isPresent ? '/' : '1';
+        if (isPresent) monthHadir++;
+        else monthTidakHadir++;
+      }
+      dayTds += `<td class="col-day-apdm">${cellTxt}</td>`;
+    }
+
+    const prevHadir = prevMonthsHadirMap.get(s.id) || 0;
+    const finalHadir = prevHadir + monthHadir;
+
+    grandTotalHadirThisMonth += monthHadir;
+    grandTotalTidakHadirThisMonth += monthTidakHadir;
+    grandTotalSepatutnyaThisMonth += (monthHadir + monthTidakHadir);
+
+    bodyRowsHtml += `<tr>
+      <td class="col-bil-apdm">${idx + 1}</td>
+      <td class="apdm-name-col"><b>${esc(s.name)}</b></td>
+      ${dayTds}
+      <td class="col-stat-apdm">${monthHadir}/${schoolDaysThisMonth}</td>
+      <td class="col-stat-apdm">${monthTidakHadir}</td>
+      <td class="col-stat-apdm">${prevHadir}</td>
+      <td class="col-stat-apdm"><b>${finalHadir}</b></td>
+    </tr>`;
+  });
+
+  // 汇总行
+  let hadirRowTds = '', tidakHadirRowTds = '', sepatutnyaRowTds = '', sahRowTds = '';
+  for (let d = 1; d <= 30; d++) {
+    if (d > daysInMonth || dayTotalCount[d] === 0) {
+      hadirRowTds += `<td class="col-day-apdm"></td>`;
+      tidakHadirRowTds += `<td class="col-day-apdm"></td>`;
+      sepatutnyaRowTds += `<td class="col-day-apdm"></td>`;
+      sahRowTds += `<td class="col-day-apdm"></td>`;
+    } else {
+      hadirRowTds += `<td class="col-day-apdm">${dayPresentCount[d]}</td>`;
+      tidakHadirRowTds += `<td class="col-day-apdm">${dayAbsentCount[d]}</td>`;
+      sepatutnyaRowTds += `<td class="col-day-apdm">${dayTotalCount[d]}</td>`;
+      sahRowTds += `<td class="col-day-apdm">/</td>`;
+    }
+  }
+
+  const purataKedatangan = schoolDaysThisMonth ? (grandTotalHadirThisMonth / schoolDaysThisMonth).toFixed(2) : '0.00';
+  const peratusKedatangan = grandTotalSepatutnyaThisMonth ? ((grandTotalHadirThisMonth / grandTotalSepatutnyaThisMonth) * 100).toFixed(2) : '0.00';
+
+  const inCount = movements.filter(m => m.movement_type === 'masuk' && m.class_id === classId).length;
+  const outCount = movements.filter(m => m.movement_type === 'keluar' && m.class_id === classId).length;
+  const endOfMonthEnrol = classStudents.length;
+  const startOfMonthEnrol = endOfMonthEnrol - inCount + outCount;
+
+  const now = new Date();
+  const printTimeStr = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+
+  const html = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px;color:#000;">
+      <div>
+        <h3 style="font-size:14px;font-weight:800;letter-spacing:0.5px;margin:0;">ANALISIS KEHADIRAN MURID</h3>
+        <h4 style="font-size:12px;font-weight:700;margin:2px 0 0 0;">${esc(targetClass.name.toUpperCase())}</h4>
+      </div>
+      <div style="text-align:right;">
+        <h3 style="font-size:13px;font-weight:800;margin:0;">${monthName(month).toUpperCase()} ${year}</h3>
+      </div>
+    </div>
+
+    <table class="tbl-apdm">
+      <thead>
+        <tr>
+          <th class="col-bil-apdm" rowspan="2">Bil</th>
+          <th style="width:160px;" rowspan="2">Nama Pelajar</th>
+          <th colspan="30">Tarikh (${monthName(month)})</th>
+          <th class="col-stat-apdm">JUMLAH HADIR BULAN INI</th>
+          <th class="col-stat-apdm">TIDAK HADIR</th>
+          <th class="col-stat-apdm">DARI BULAN LALU</th>
+          <th class="col-stat-apdm">AKHIR BULAN INI</th>
+        </tr>
+        <tr>
+          ${Array.from({length:30}, (_,i)=>`<th class="col-day-apdm">${(i+1).toString().padStart(2,'0')}</th>`).join('')}
+          <th colspan="4"></th>
+        </tr>
+      </thead>
+      <tbody>
+        ${bodyRowsHtml || `<tr><td colspan="36" style="padding:15px;">Tiada murid dalam kelas ini.</td></tr>`}
+        <tr class="summary-row-apdm">
+          <td colspan="2" class="summary-label">JUMLAH MURID HADIR</td>
+          ${hadirRowTds}
+          <td colspan="4"><b>${grandTotalHadirThisMonth}</b></td>
+        </tr>
+        <tr class="summary-row-apdm">
+          <td colspan="2" class="summary-label">JUMLAH MURID TIDAK HADIR</td>
+          ${tidakHadirRowTds}
+          <td colspan="4"><b>${grandTotalTidakHadirThisMonth}</b></td>
+        </tr>
+        <tr class="summary-row-apdm">
+          <td colspan="2" class="summary-label">JUMLAH KEHADIRAN SEPATUTNYA</td>
+          ${sepatutnyaRowTds}
+          <td colspan="4"><b>${grandTotalSepatutnyaThisMonth}</b></td>
+        </tr>
+        <tr class="summary-row-apdm">
+          <td colspan="2" class="summary-label">PENGESAHAN SAH HARIAN</td>
+          ${sahRowTds}
+          <td colspan="4"></td>
+        </tr>
+        <tr class="summary-row-apdm">
+          <td colspan="2" class="summary-label">Purata Kedatangan</td>
+          <td colspan="10" style="text-align:left;padding-left:6px;"><b>${purataKedatangan}</b></td>
+          <td colspan="4" class="summary-label">Peratus Kedatangan</td>
+          <td colspan="14" style="text-align:left;padding-left:6px;"><b>${peratusKedatangan}%</b></td>
+          <td colspan="4"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 底部 APDM 统计与签核框 -->
+    <div class="apdm-footer-block">
+      <div class="apdm-footer-grid">
+        <div>
+          <div class="apdm-meta-item"><span>Bil. Murid Dalam Daftar Hujung Bulan Lepas</span><b>${startOfMonthEnrol}</b></div>
+          <div class="apdm-meta-item"><span>Bil. Murid Yang Masuk</span><b>${inCount}</b></div>
+          <div class="apdm-meta-item"><span>Bil. Murid Yang Keluar</span><b>${outCount}</b></div>
+          <div class="apdm-meta-item"><span>Bil. Murid Dalam Daftar Hujung Bulan</span><b>${endOfMonthEnrol}</b></div>
+        </div>
+        <div>
+          <div class="apdm-meta-item"><span>Bil. Hari Belajar Dalam Bulan-bulan Sudah</span><b>-</b></div>
+          <div class="apdm-meta-item"><span>Bil. Hari Belajar Dalam Bulan Ini</span><b>${schoolDaysThisMonth}</b></div>
+          <div class="apdm-meta-item"><span>Jumlah Hingga Akhir Bulan Ini</span><b>${schoolDaysThisMonth}</b></div>
+        </div>
+        <div>
+          <div class="apdm-meta-item"><span>Nama Guru Kelas:</span><b>${esc(schoolSettings.gd || 'GURU KELAS')}</b></div>
+          <div class="apdm-meta-item"><span>Nama Kelas:</span><b>${esc(targetClass.name.toUpperCase())}</b></div>
+          <div class="apdm-meta-item"><span>Nama Sekolah:</span><b>${esc(schoolSettings.name || 'SEKOLAH JENIS KEBANGSAAN (CINA) CHUNG HUA RANTAU')}</b></div>
+        </div>
+      </div>
+      <div class="apdm-petunjuk">
+        <b>Petunjuk:</b> Cuti Mingguan | Cuti Umum | Cuti Negeri | Cuti Penggal | Cuti Ketetapan KPM | Cuti Berganti | Cuti Sekolah/Peristiwa | Hari Ganti Sekolah
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:8px;color:#333;">
+      <span>DIJANA OLEH: ${esc(currentUser?.email || 'ADMIN')} || PADA ${printTimeStr}</span>
+      <span>Halaman 1 dari 1</span>
+    </div>
+  `;
+
+  $('anMonthClassReportContainer').innerHTML = html;
 }
 
 /* ============================================================
@@ -2892,24 +3370,26 @@ function renderClassManage() {
 }
 
 function renderStudentManage() {
-  const clsId = $('manageStudentClass').value;
-  const search = ($('manageStudentSearch')?.value || '').toLowerCase();
-  const tbody = $('tblStudentManage')?.querySelector('tbody');
-  if (!tbody) return;
-  let list = allStudentsData.filter(s => s.class_id === clsId);
-  if (search) list = list.filter(s => s.name.toLowerCase().includes(search));
-  list.sort((a,b)=>a.student_no-b.student_no);
-  tbody.innerHTML = list.length ? list.map(s => `
-    <tr>
-      <td>${s.student_no}</td><td class="l">${esc(s.name)}</td>
-      <td>${s.gender}</td><td>${t('raceLabels')[s.race] || s.race}</td>
-      <td>${s.is_rmt ? '<span class="tag-rmt">RMT</span>' : '-'}</td>
-      <td><span class="status-badge ${s.active?'ok':'empty'}">${s.active?t('statusActive'):t('statusInactive')}</span></td>
-      <td>
-        <div class="row-actions"><button class="icon-btn" aria-label="Edit" onclick="editStudent('${s.id}')">${ic('pencil')}</button><button class="icon-btn danger" aria-label="Delete" onclick="deleteStudent('${s.id}')">${ic('trash')}</button></div>
-      </td>
-    </tr>
-  `).join('') : `<tr><td colspan="7" class="muted" style="padding:20px">${t('noStudentsFound')}</td></tr>`;
+  const clsId = $('manageStudentClass')?.value;
+  const search = ($('manageStudentSearch')?.value || '').trim().toLowerCase();
+  const showInactive = $('showInactiveStudents')?.checked;
+  const box = $('studentAdminList');
+  if (!box) return;
+  let list = allStudentRecords.filter(st => st.class_id === clsId && (showInactive || st.active !== false));
+  if (search) list = list.filter(st => (st.name || '').toLowerCase().includes(search));
+  list.sort((a,b)=>(a.student_no||0)-(b.student_no||0));
+  box.innerHTML = list.length ? list.map(st => `
+    <div class="student-admin-item">
+      <div>
+        <div class="student-admin-name">#${st.student_no || '-'} ${esc(st.name)} ${st.gender === 'P' ? '(P)' : '(L)'} ${st.is_rmt ? '<span class="tag-rmt">RMT</span>' : ''}</div>
+        <div class="student-admin-meta">${t('raceLabels')[st.race] || st.race || '-'} · <span class="status-badge ${st.active===false?'empty':'ok'}">${st.active===false?t('inactiveStudent'):t('activeStudent')}</span></div>
+      </div>
+      <div class="student-admin-tools">
+        <button onclick="editStudent('${st.id}')">${t('edit')}</button>
+        <button onclick="transferStudent('${st.id}')">${t('transfer')}</button>
+        <button class="del" onclick="deleteStudent('${st.id}')">${t('deleteAction')}</button>
+      </div>
+    </div>`).join('') : `<div class="empty-note">${t('noStudentsFound')}</div>`;
 }
 
 function renderTeacherSelect() {
@@ -2922,29 +3402,57 @@ function renderTeacherSelect() {
 }
 
 async function renderTeacherAssignments() {
-  const teacherId = $('teacherSelect').value;
+  const teacherId = $('teacherSelect')?.value;
   if (!teacherId) { $('teacherAssignmentList').innerHTML = ''; return; }
-  const { data: assigned } = await supabaseClient.from('class_assignments').select('class_id').eq('teacher_id', teacherId);
+  const { data: assigned, error } = await supabaseClient.from('class_assignments').select('class_id,is_class_teacher').eq('teacher_id', teacherId);
+  if (error) { toast(t('saveFailed') + error.message, true); return; }
   const assignedSet = new Set((assigned || []).map(x => x.class_id));
   $('teacherAssignmentList').innerHTML = classes.map(c => `
-    <label class="check-item">
-      <input type="checkbox" value="${c.id}" ${assignedSet.has(c.id)?'checked':''}>
-      ${esc(c.name)}
-    </label>
-  `).join('');
+    <label class="check-item"><input type="checkbox" value="${c.id}" ${assignedSet.has(c.id)?'checked':''}> ${esc(c.name)}</label>`).join('');
+  const { data: allAssignments } = await supabaseClient.from('class_assignments').select('class_id,teacher_id,is_class_teacher');
+  const teacherOptions = teachers.map(tc => `<option value="${tc.user_id}">${esc(tc.email)}</option>`).join('');
+  $('classTeacherGrid').innerHTML = classes.map(c => {
+    const current = (allAssignments || []).find(x => x.class_id === c.id && x.is_class_teacher);
+    return `<div class="class-teacher-item"><label>${esc(c.name)} · ${t('classTeacherTitle')}</label>
+      <select class="class-teacher-select" data-class-id="${c.id}">
+        <option value="">${t('noClassTeacher')}</option>
+        ${teacherOptions}
+      </select></div>`;
+  }).join('');
+  (allAssignments || []).filter(x => x.is_class_teacher).forEach(x => {
+    const sel = document.querySelector(`.class-teacher-select[data-class-id="${x.class_id}"]`);
+    if (sel) sel.value = x.teacher_id;
+  });
 }
-
 async function saveTeacherAssignments() {
   const teacherId = $('teacherSelect').value;
   if (!teacherId) return;
-  const chosen = [...document.querySelectorAll('#teacherAssignmentList input:checked')].map(x => x.value);
-  await supabaseClient.from('class_assignments').delete().eq('teacher_id', teacherId);
-  if (chosen.length) {
-    const rows = chosen.map(class_id => ({ class_id, teacher_id: teacherId }));
-    const { error } = await supabaseClient.from('class_assignments').insert(rows);
+  const selectedClasses = [...document.querySelectorAll('#teacherAssignmentList input:checked')].map(x => x.value);
+  const classTeacherMap = new Map([...document.querySelectorAll('.class-teacher-select')].filter(x=>x.value).map(x=>[x.dataset.classId,x.value]));
+  const { data: existing, error: readError } = await supabaseClient.from('class_assignments').select('class_id,teacher_id,is_class_teacher');
+  if (readError) { toast(t('saveFailed') + readError.message, true); return; }
+  const { error: clearFlagError } = await supabaseClient.from('class_assignments').update({is_class_teacher:false}).eq('is_class_teacher',true);
+  if (clearFlagError) { toast(t('saveFailed') + clearFlagError.message, true); return; }
+  const { error: clearTeacherError } = await supabaseClient.from('class_assignments').delete().eq('teacher_id', teacherId);
+  if (clearTeacherError) { toast(t('saveFailed') + clearTeacherError.message, true); return; }
+  const teacherRows = selectedClasses.map(class_id=>({class_id,teacher_id:teacherId,is_class_teacher:classTeacherMap.get(class_id)===teacherId}));
+  if (teacherRows.length) {
+    const { error } = await supabaseClient.from('class_assignments').insert(teacherRows);
     if (error) { toast(t('saveFailed') + error.message, true); return; }
   }
+  for (const [classId, classTeacherId] of classTeacherMap) {
+    if (classTeacherId === teacherId && selectedClasses.includes(classId)) continue;
+    const hadRow = (existing||[]).some(x=>x.class_id===classId && x.teacher_id===classTeacherId);
+    if (hadRow) {
+      const { error } = await supabaseClient.from('class_assignments').update({is_class_teacher:true}).eq('class_id',classId).eq('teacher_id',classTeacherId);
+      if (error) { toast(t('saveFailed') + error.message, true); return; }
+    } else {
+      const { error } = await supabaseClient.from('class_assignments').insert({class_id:classId,teacher_id:classTeacherId,is_class_teacher:true});
+      if (error) { toast(t('saveFailed') + error.message, true); return; }
+    }
+  }
   toast(t('saved'));
+  await renderTeacherAssignments();
 }
 
 async function saveSchoolSettings() {
@@ -3163,63 +3671,132 @@ function deleteClass(id) {
 }
 
 function openAddStudentModal() {
-  const clsId = $('manageStudentClass').value;
-  $('studentModalClass').value = clsId;
+  $('studentModalEditId').value = '';
+  $('studentModalTitle').textContent = t('addStudentTitle');
+  $('studentModalClass').value = $('manageStudentClass').value || '';
   $('studentModalName').value = '';
+  $('studentModalGender').value = 'L';
+  $('studentModalRace').value = 'cina';
   $('studentModalRMT').checked = false;
   openModal('studentModal');
 }
-
+async function renumberStudents() {
+  const clsId=$('manageStudentClass').value;
+  const list=allStudentRecords.filter(x=>x.class_id===clsId).sort((a,b)=>(a.student_no||0)-(b.student_no||0));
+  for(let i=0;i<list.length;i++){
+    if(list[i].student_no!==i+1){
+      const {error}=await supabaseClient.from('students').update({student_no:i+1}).eq('id',list[i].id);
+      if(error){toast(t('updateFailed')+error.message,true);return;}
+    }
+  }
+  await loadAllStudents(); renderStudentManage(); toast(t('updated'));
+}
+async function quickAddStudent() {
+  const name = $('quickStudentName').value.trim();
+  const classId = $('manageStudentClass').value;
+  if (!name || !classId) { toast(t('pleaseFill'), true); return; }
+  const { data: maxNo, error: maxErr } = await supabaseClient.from('students').select('student_no').eq('class_id', classId).order('student_no', {ascending:false}).limit(1);
+  if (maxErr) { toast(t('saveFailed')+maxErr.message,true); return; }
+  const { error } = await supabaseClient.from('students').insert({
+    class_id:classId, student_no:(maxNo?.[0]?.student_no||0)+1, name,
+    gender:$('quickStudentGender').value, race:'cina', active:true, is_rmt:$('quickStudentRMT').checked
+  });
+  if (error) { toast(t('saveFailed')+error.message,true); return; }
+  $('quickStudentName').value=''; $('quickStudentRMT').checked=false;
+  await loadAllStudents(); await loadAttendanceForDate($('pointDate').value);
+  students=allStudentsData.filter(x=>x.class_id===selectedClassId).sort((a,b)=>a.student_no-b.student_no);
+  renderPointPanel(); renderStudentManage(); toast(t('studentAdded'));
+}
 async function saveStudent() {
+  const id = $('studentModalEditId').value;
   const name = $('studentModalName').value.trim();
   const gender = $('studentModalGender').value;
   const race = $('studentModalRace').value;
   const classId = $('studentModalClass').value;
   const is_rmt = $('studentModalRMT').checked;
   if (!name || !classId) { toast(t('pleaseFill'), true); return; }
-
-  const { data: maxNo } = await supabaseClient
-    .from('students').select('student_no').eq('class_id', classId).order('student_no', {ascending:false}).limit(1);
-  const nextNo = (maxNo?.[0]?.student_no || 0) + 1;
-
-  const { error } = await supabaseClient.from('students').insert({
-    class_id: classId, student_no: nextNo, name, gender, race, active: true, is_rmt
-  });
-  if (error) { toast(t('saveFailed') + error.message, true); return; }
+  if (id) {
+    const old = allStudentRecords.find(x=>x.id===id);
+    const patch = {name,gender,race,class_id:classId,is_rmt};
+    if (old && old.class_id !== classId) {
+      const {data:maxNo,error:maxErr}=await supabaseClient.from('students').select('student_no').eq('class_id',classId).order('student_no',{ascending:false}).limit(1);
+      if(maxErr){toast(t('saveFailed')+maxErr.message,true);return;}
+      patch.student_no=(maxNo?.[0]?.student_no||0)+1;
+    }
+    const updated = await updateStudent(id,patch);
+    if (!updated) return;
+  } else {
+    const { data: maxNo, error: maxErr } = await supabaseClient.from('students').select('student_no').eq('class_id', classId).order('student_no', {ascending:false}).limit(1);
+    if(maxErr){toast(t('saveFailed')+maxErr.message,true);return;}
+    const { error } = await supabaseClient.from('students').insert({
+      class_id: classId, student_no: (maxNo?.[0]?.student_no || 0)+1, name, gender, race, active: true, is_rmt
+    });
+    if (error) { toast(t('saveFailed') + error.message, true); return; }
+    await loadAllStudents(); await loadAttendanceForDate($('pointDate').value);
+    students = allStudentsData.filter(s => s.class_id === selectedClassId).sort((a,b)=>a.student_no-b.student_no);
+    renderPointPanel(); renderStudentManage(); toast(t('added'));
+  }
   closeModal('studentModal');
-  await loadAllStudents();
-  await loadAttendanceForDate($('pointDate').value);
-  students = allStudentsData.filter(s => s.class_id === selectedClassId).sort((a,b)=>a.student_no-b.student_no);
-  renderPointPanel();
-  renderStudentManage();
-  toast(t('added'));
 }
-
 function editStudent(id) {
-  const s = allStudentsData.find(x => x.id === id);
-  if (!s) return;
-  const newName = prompt(t('name'), s.name);
-  if (newName === null) return;
-  const newGender = prompt(t('gender') + ' (L/P):', s.gender);
-  if (!['L','P'].includes(newGender)) { toast(t('pleaseFill'), true); return; }
-  const newRace = prompt(t('race') + ' (melayu/cina/india/lain):', s.race);
-  if (!['melayu','cina','india','lain'].includes(newRace)) { toast(t('pleaseFill'), true); return; }
-  const isRmtConfirm = confirm('Is this student RMT? / 是否为 RMT 学生？');
-  updateStudent(id, { name: newName.trim(), gender: newGender, race: newRace, is_rmt: isRmtConfirm });
+  const st = allStudentRecords.find(x => x.id === id);
+  if (!st) return;
+  $('studentModalEditId').value = st.id;
+  $('studentModalTitle').textContent = t('edit');
+  $('studentModalName').value = st.name || '';
+  $('studentModalGender').value = st.gender || 'L';
+  $('studentModalRace').value = st.race || 'cina';
+  $('studentModalClass').value = st.class_id;
+  $('studentModalRMT').checked = !!st.is_rmt;
+  openModal('studentModal');
 }
-
+function transferStudent(id) { editStudent(id); }
 async function updateStudent(id, patch) {
   const { error } = await supabaseClient.from('students').update(patch).eq('id', id);
-  if (error) { toast(t('updateFailed') + error.message, true); return; }
+  if (error) { toast(t('updateFailed') + error.message, true); return false; }
   await loadAllStudents();
   students = allStudentsData.filter(s => s.class_id === selectedClassId).sort((a,b)=>a.student_no-b.student_no);
+  await loadAttendanceForDate($('pointDate').value);
   renderPointPanel();
   renderStudentManage();
-  toast(t('updated'));
+  toast(t('studentUpdated'));
+  return true;
+}
+async function promoteClassStudents() {
+  const clsId=$('manageStudentClass').value;
+  const source=classes.find(c=>c.id===clsId);
+  if(!source)return;
+  const grade=parseInt((source.name.match(/\d+/)||[])[0],10);
+  const candidates=classes.filter(c=>c.id!==clsId && parseInt((c.name.match(/\d+/)||[])[0],10)===grade+1);
+  const target=candidates[0];
+  if(!target){toast(t('noNextClass'),true);return;}
+  showConfirmModal(`${t('promoteConfirm')} ${target.name}?`,async()=>{
+    const ids=allStudentRecords.filter(x=>x.class_id===clsId && x.active!==false).map(x=>x.id);
+    if(!ids.length){toast(t('noStudentsFound'),true);return;}
+    const {data:maxNo,error:maxErr}=await supabaseClient.from('students').select('student_no').eq('class_id',target.id).order('student_no',{ascending:false}).limit(1);
+    if(maxErr){toast(t('saveFailed')+maxErr.message,true);return;}
+    let next=(maxNo?.[0]?.student_no||0)+1;
+    for(const id of ids){
+      const {error}=await supabaseClient.from('students').update({class_id:target.id,student_no:next++}).eq('id',id);
+      if(error){toast(t('updateFailed')+error.message,true);return;}
+    }
+    await loadAllStudents(); renderStudentManage(); toast(t('updated'));
+  });
+}
+async function graduateClassStudents() {
+  const clsId=$('manageStudentClass').value;
+  showConfirmModal(t('graduateConfirm'),async()=>{
+    const ids=allStudentRecords.filter(x=>x.class_id===clsId && x.active!==false).map(x=>x.id);
+    for(const id of ids){
+      const {error}=await supabaseClient.from('students').update({active:false}).eq('id',id);
+      if(error){toast(t('updateFailed')+error.message,true);return;}
+    }
+    await loadAllStudents(); renderStudentManage(); toast(t('updated'));
+  });
 }
 
 function deleteStudent(id) {
-  const s = allStudentsData.find(x => x.id === id);
+  const s = allStudentRecords.find(x => x.id === id);
   if (!s) return;
   showConfirmModal(`${t('confirmDelete')} (${s.name})`, async () => {
     const { error } = await supabaseClient.from('students').delete().eq('id', id);
